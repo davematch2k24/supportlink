@@ -38,7 +38,10 @@ export default {
                 Worker
               </v-btn>
             </v-col>
-            <v-col cols="12" class="text-center mt-3">
+            <v-col class="text-h5">
+              <h3>or</h3>
+            </v-col>
+            <v-col cols="12" class="text-center">
               <v-btn
                 block
                 color="orange lighten-2"
@@ -56,7 +59,7 @@ export default {
         <!-- Right: Description and Images -->
         <v-col cols="12" md="7" class="">
           <!-- SupportLink Description -->
-          <h3 class="mx-8">
+          <h3 class="ms-5 me-3 my-8">
             <h2>SupportLink</h2>
             is designed to support the functionality of a community aid platform aimed at helping
             social workers efficiently manage and respond to help requests from individuals within
@@ -64,29 +67,29 @@ export default {
           </h3>
 
           <!-- Images under the description -->
-          <v-row class="mt-4">
-            <v-col cols="12" class="text-center">
+          <v-row class="mt-4" justify="center">
+            <v-col cols="12" sm="4" class="text-center">
               <v-img
                 src="/public/donation.jpg"
                 aspect-ratio="16/9"
-                class="rounded-lg mx-auto mb-4"
+                class="rounded-lg bounce-animation"
                 alt="Community Support"
               ></v-img>
             </v-col>
-            <v-col cols="12" class="text-center">
+            <v-col cols="12" sm="4" class="text-center">
+              <v-img
+                src="/public/support.jpg"
+                aspect-ratio="16/9"
+                class="rounded-lg bounce-animation"
+                alt="Support Session"
+              ></v-img>
+            </v-col>
+            <v-col cols="12" sm="4" class="text-center">
               <v-img
                 src="/public/food.jpg"
                 aspect-ratio="16/9"
-                class="rounded-lg mx-auto mb-4"
+                class="rounded-lg bounce-animation"
                 alt="Volunteer Distribution"
-              ></v-img>
-            </v-col>
-            <v-col cols="12" class="text-center">
-              <v-img
-                src="/public/help.jpg"
-                aspect-ratio="16/9"
-                class="rounded-lg mx-auto"
-                alt="Support Session"
               ></v-img>
             </v-col>
           </v-row>
@@ -120,6 +123,10 @@ export default {
 </template>
 
 <style scoped>
+* {
+  font-family: 'Lucida Sans';
+}
+
 .text-h5 {
   font-size: 1.5rem;
 }
@@ -143,5 +150,20 @@ export default {
 
 .mb-4 {
   margin-bottom: 16px;
+}
+
+/* Bounce Animation */
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce-animation {
+  animation: bounce 2s infinite;
 }
 </style>
