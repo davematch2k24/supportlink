@@ -37,11 +37,17 @@ export default {
         <form @submit.prevent="handleLogin" class="login-form">
           <TextField label="Email" type="email" v-model="email" required />
           <TextField label="Password" type="password" v-model="password" required />
+<<<<<<< HEAD
           <Button text="Login" />
         </form>
         <p class="signup-link">
           Don't have an account? <RouterLink to="/register">Sign up</RouterLink>
         </p>
+=======
+          <Button text="Login" type="submit" />
+          <!-- Ensure the text prop is set to 'Login' -->
+        </form>
+>>>>>>> friend/main
       </div>
     </section>
 
