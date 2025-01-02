@@ -1,5 +1,4 @@
 <script>
-import HeaderNav from '@/components/navigation/HeaderNav.vue'
 import FooterNav from '@/components/navigation/FooterNav.vue'
 import TextField from '@/components/navigation/TextField.vue'
 import Button from '@/components/navigation/Button.vue'
@@ -7,7 +6,6 @@ import Button from '@/components/navigation/Button.vue'
 export default {
   name: 'RegisterView',
   components: {
-    HeaderNav,
     FooterNav,
     TextField,
     Button,
