@@ -1,147 +1,85 @@
 <script>
 export default {
   name: 'SupportLinkLayout',
-  methods: {
-    redirectToLoginForm() {
-      this.$router.push('/login') // Replace with your actual login form route
-    },
-    redirectToRequestForm() {
-      this.$router.push('/requestform') // Replace with your actual request form route
-    },
-  },
 }
 </script>
 
 <template>
   <v-app>
-    <v-responsive style="background-color: #a8e4ef">
+    <v-container fluid>
       <!-- Header and Worker/Client Section -->
       <v-row justify="center" class="pa-6" style="background-color: #a8e4ef">
-        <!-- Left: Worker and Client Buttons -->
-        <v-col cols="12" md="5" class="text-center">
-          <v-img
-            src="/public/sllogo.png"
-            max-width="50%"
-            class="mb-4 mx-auto"
-            alt="SupportLink Logo"
-          ></v-img>
+        <v-col cols="12" md="6" class="text-center">
+          <v-img src="/sllogo.jpg" max-width="120" class="mb-4" alt="SupportLink Logo"></v-img>
 
           <v-row>
-            <v-col cols="12" class="text-center">
-              <v-btn
-                block
-                color="teal lighten-2"
-                class="white--text text-h5"
-                @click="redirectToLoginForm"
-              >
-                <v-icon class="me-3" left>mdi-account-hard-hat</v-icon>
+            <v-col cols="12" md="6" class="text-center">
+              <v-btn block color="teal lighten-2" class="white--text text-h5">
+                <v-icon left>mdi-account-hard-hat</v-icon>
                 Worker
               </v-btn>
             </v-col>
-            <v-col cols="12" class="text-center mt-3">
-              <v-btn
-                block
-                color="orange lighten-2"
-                class="white--text text-h5"
-                @click="redirectToRequestForm"
-              >
-                <v-icon class="me-3" left>mdi-account-group</v-icon>
+            <v-col cols="12" md="6" class="text-center">
+              <v-btn block color="orange lighten-2" class="white--text text-h5">
+                <v-icon left>mdi-account-group</v-icon>
                 Client
               </v-btn>
-              <p class="mt-2">Follow up on your service request? Track here.</p>
+              <p>Follow up on your service request? Track here.</p>
             </v-col>
           </v-row>
         </v-col>
+        <v-col cols="12" md="6" class="text-center">
+          <p>
+            SupportLink is a Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry's standard dummy ever since the 1500s, when
+            an unknown printer took a galley of type and scrambled it to make a type specimen book.
+          </p>
+        </v-col>
+      </v-row>
 
-        <!-- Right: Description and Images -->
-        <v-col cols="12" md="7" class="">
-          <!-- SupportLink Description -->
-          <h3 class="mx-8">
-            <h2>SupportLink</h2>
-            is designed to support the functionality of a community aid platform aimed at helping
-            social workers efficiently manage and respond to help requests from individuals within
-            their community.
-          </h3>
-
-          <!-- Images under the description -->
-          <v-row class="mt-4">
-            <v-col cols="12" class="text-center">
-              <v-img
-                src="/public/donation.jpg"
-                aspect-ratio="16/9"
-                class="rounded-lg mx-auto mb-4"
-                alt="Community Support"
-              ></v-img>
-            </v-col>
-            <v-col cols="12" class="text-center">
-              <v-img
-                src="/public/food.jpg"
-                aspect-ratio="16/9"
-                class="rounded-lg mx-auto mb-4"
-                alt="Volunteer Distribution"
-              ></v-img>
-            </v-col>
-            <v-col cols="12" class="text-center">
-              <v-img
-                src="/public/help.jpg"
-                aspect-ratio="16/9"
-                class="rounded-lg mx-auto"
-                alt="Support Session"
-              ></v-img>
-            </v-col>
-          </v-row>
+      <!-- Image and Contact Section -->
+      <v-row>
+        <v-col cols="12" md="4">
+          <v-img
+            src="image1_url_here"
+            aspect-ratio="16/9"
+            class="rounded-lg"
+            alt="Community Support"
+          ></v-img>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-img
+            src="image2_url_here"
+            aspect-ratio="16/9"
+            class="rounded-lg"
+            alt="Volunteer Distribution"
+          ></v-img>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-img
+            src="image3_url_here"
+            aspect-ratio="16/9"
+            class="rounded-lg"
+            alt="Support Session"
+          ></v-img>
         </v-col>
       </v-row>
 
       <!-- Footer Section -->
-      <v-footer style="background-color: #a8e4ef" border app>
-        <v-container>
-          <v-row justify="space-between">
-            <!-- Left-aligned text -->
-            <v-col cols="12" sm="6" class="text-center text-sm-start">
-              <span>Copyright © 2024 - SupportLink | All Rights Reserved</span>
-            </v-col>
-
-            <!-- Right-aligned links in a single line -->
-            <v-col cols="12" sm="6" class="text-center text-sm-end">
-              <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
-              <span class="footer-divider mx-2">|</span>
-              <a href="/terms-of-service" class="footer-link">Terms of Service</a>
-              <span class="footer-divider mx-2">|</span>
-              <a href="/faqs" class="footer-link">FAQs</a>
-              <span class="footer-divider mx-2">|</span>
-              <a href="/feedback" class="footer-link">Feedback</a>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-footer>
-    </v-responsive>
+      <v-row justify="center" class="pa-6" style="background-color: #f4f4f4">
+        <v-col cols="12" md="8" class="text-center">
+          <p>Contacts: supportlink@gmail.com | Social Media: Facebook, Twitter, Instagram</p>
+        </v-col>
+        <v-col cols="12" md="8" class="text-center">
+          <p>Languages Supported: Filipino, Cebuano, English</p>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-app>
 </template>
 
 <style scoped>
 .text-h5 {
   font-size: 1.5rem;
-}
-
-.shadow-section {
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a custom shadow */
-}
-
-.text-center {
-  text-align: center;
-}
-
-.mx-8 {
-  margin-left: 32px;
-  margin-right: 32px;
-}
-
-.mt-4 {
-  margin-top: 16px;
-}
-
-.mb-4 {
-  margin-bottom: 16px;
 }
 </style>
