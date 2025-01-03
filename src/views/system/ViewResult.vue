@@ -24,12 +24,19 @@ onMounted(() => {
     <v-app :theme="theme">
       <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
         <v-container>
-          <h2 class="white--text">Request Details</h2>
+          <v-row>
+            <v-col cols="12" class="text-left">
+              <h2 class="white--text">
+                <strong>Tracking Number: {{ trackingNumber }}</strong>
+              </h2>
+            </v-col>
+          </v-row>
         </v-container>
         <v-spacer></v-spacer>
       </v-app-bar>
 
       <v-main
+        class="d-flex justify-center align-center"
         style="
           background-image: url('/public/background-forms.jpg');
           background-size: cover;
@@ -37,34 +44,37 @@ onMounted(() => {
           padding: 10px 0;
         "
       >
-        <v-container>
-          <v-sheet class="mx-auto py-4 px-4" elevation="3" style="max-width: 800px">
-            <h3 class="tracking-number">Tracking Number: {{ trackingNumber }}</h3>
-            <v-divider></v-divider>
-            <div class="info-section">
-              <p><strong>Full Name:</strong> {{ resultData.fullName }}</p>
-              <p><strong>Phone Number:</strong> {{ resultData.phoneNumber }}</p>
-              <p><strong>Email Address:</strong> {{ resultData.emailAddress }}</p>
-              <p><strong>Home Address:</strong> {{ resultData.homeAddress }}</p>
-              <p>
-                <strong>Number of Family Members:</strong> {{ resultData.numberOfFamilyMembers }}
-              </p>
-            </div>
-            <v-divider></v-divider>
-            <div class="info-section">
-              <p><strong>Request Type:</strong> {{ resultData.requestType }}</p>
-              <p><strong>Request Purpose:</strong> {{ resultData.requestPurpose }}</p>
-            </div>
-            <v-divider></v-divider>
-            <div class="info-section">
-              <p class="request-status">
-                <strong>Request Status:</strong>
-                <span :class="(resultData.status || 'pending').toLowerCase()">
-                  <span class="circle"></span> {{ resultData.status || 'Pending' }}</span
-                >
-              </p>
-            </div>
-          </v-sheet>
+        <v-container class="fill-height">
+          <v-row class="d-flex justify-center align-center">
+            <v-col cols="12" md="8">
+              <v-sheet class="mx-auto py-1 px-4" elevation="3" style="max-width: 800px">
+                <div class="info-section">
+                  <p><strong>Full Name:</strong> {{ resultData.fullName }}</p>
+                  <p><strong>Phone Number:</strong> {{ resultData.phoneNumber }}</p>
+                  <p><strong>Email Address:</strong> {{ resultData.emailAddress }}</p>
+                  <p><strong>Home Address:</strong> {{ resultData.homeAddress }}</p>
+                  <p>
+                    <strong>Number of Family Members:</strong>
+                    {{ resultData.numberOfFamilyMembers }}
+                  </p>
+                </div>
+                <v-divider></v-divider>
+                <div class="info-section">
+                  <p><strong>Request Type:</strong> {{ resultData.requestType }}</p>
+                  <p><strong>Request Purpose:</strong> {{ resultData.requestPurpose }}</p>
+                </div>
+                <v-divider></v-divider>
+                <div class="info-section">
+                  <p class="request-status">
+                    <strong>Request Status:</strong>
+                    <span :class="(resultData.status || 'pending').toLowerCase()">
+                      <span class="circle"></span> {{ resultData.status || 'Pending' }}</span
+                    >
+                  </p>
+                </div>
+              </v-sheet>
+            </v-col>
+          </v-row>
         </v-container>
       </v-main>
 
