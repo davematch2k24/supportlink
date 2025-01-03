@@ -22,8 +22,10 @@ export default {
 
 <style scoped>
 .hero-image img {
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
+  max-width: 75%; /* Resize image to 50% of its parent container */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 10px; /* Apply rounded borders */
+  display: block; /* Center alignment adjustment */
+  margin: 0 auto; /* Center horizontally within the parent container */
 }
 </style>
