@@ -2,25 +2,12 @@
   <v-app>
     <HeaderNav />
 
-    <v-container style="background-color: #d9eafd" class="hero" fluid>
+    <v-responsive style="background-color: #d9eafd" class="hero">
       <v-row>
-        <v-col cols="12" md="6">
-          <v-container class="hero-content mt-10">
-            <h1 class="green-text mt-10" :style="{ fontSize: '60px' }">
-              Give a Little,
-              <br />
-              Help a Lot
-            </h1>
-
-            <h2 class="mt-5">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce iaculis vitae nulla
-              quis egestas. Mauris eros diam, rutrum posuere velit sit.
-            </h2>
-            <br />
-            <v-btn color="" class="mt-3">Read More</v-btn>
-          </v-container>
+        <v-col cols="12" md="8">
+          <v-container class="hero-content mt-10"></v-container>
         </v-col>
-        <v-col cols="12" md="6" class="my-16">
+        <v-col cols="12" md="4" class="my-16">
           <v-responsive class="float-animation elevation-5 rounded" :width="500">
             <v-img
               :width="500"
@@ -32,7 +19,7 @@
           </v-responsive>
         </v-col>
       </v-row>
-    </v-container>
+    </v-responsive>
 
     <FooterNav />
   </v-app>

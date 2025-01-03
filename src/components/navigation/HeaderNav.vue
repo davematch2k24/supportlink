@@ -3,7 +3,7 @@
     <!-- Logo section: Aligns the logo to the start -->
     <v-img src="/public/sllogo.png" contain width="100" class="mr-4"></v-img>
 
-    <v-btn text href="#">Request</v-btn>
+    <v-btn text href="#">Requests</v-btn>
     <v-btn text href="#">Resources</v-btn>
   </v-app-bar>
 </template>

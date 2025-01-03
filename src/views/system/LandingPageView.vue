@@ -97,7 +97,7 @@ export default {
       </v-row>
 
       <!-- Footer Section -->
-      <v-footer style="background-color: #a8e4ef" border app>
+      <v-footer style="background-color: #ff8c00" border app>
         <v-container>
           <v-row justify="space-between">
             <!-- Left-aligned text -->
