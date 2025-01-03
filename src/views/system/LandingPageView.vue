@@ -6,7 +6,14 @@ export default {
       this.$router.push('/login') // Replace with your actual login form route
     },
     redirectToRequestForm() {
+
+      this.$router.push('/clientinfo') // Replace with your actual request form route
+    },
+    redirectToTrackingPage() {
+      this.$router.push('/trackingpage') // Replace with your actual tracking page route
+
       this.$router.push('/requestform') // Replace with your actual request form route
+
     },
   },
 }
@@ -51,7 +58,14 @@ export default {
                 <v-icon class="me-3" left>mdi-account-group</v-icon>
                 Client
               </v-btn>
+
+              <p class="mt-2">
+                Follow up on your service request?
+                <a href="#" @click.prevent="redirectToTrackingPage">Track here</a>.
+              </p>
+
               <p class="mt-2">Follow up on your service request? Track here.</p>
+
             </v-col>
           </v-row>
         </v-col>
@@ -97,7 +111,11 @@ export default {
       </v-row>
 
       <!-- Footer Section -->
+
+      <v-footer style="background-color: #a8e4ef" border app>
+
       <v-footer style="background-color: #ff8c00" border app>
+
         <v-container>
           <v-row justify="space-between">
             <!-- Left-aligned text -->
