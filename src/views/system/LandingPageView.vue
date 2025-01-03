@@ -23,7 +23,7 @@ export default {
         <!-- Left: Worker and Client Buttons -->
         <v-col cols="12" md="5" class="text-center">
           <v-img
-            src="/public/sllogo.png"
+            src="/sllogo.png"
             max-width="50%"
             class="mb-4 mx-auto"
             alt="SupportLink Logo"
@@ -79,7 +79,7 @@ export default {
           <v-row class="mt-4" justify="center">
             <v-col cols="12" sm="4" class="text-center">
               <v-img
-                src="/public/donation.jpg"
+                src="/donation.jpg"
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Community Support"
@@ -87,7 +87,7 @@ export default {
             </v-col>
             <v-col cols="12" sm="4" class="text-center">
               <v-img
-                src="/public/support.jpg"
+                src="/support.jpg"
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Support Session"
@@ -95,7 +95,7 @@ export default {
             </v-col>
             <v-col cols="12" sm="4" class="text-center">
               <v-img
-                src="/public/food.jpg"
+                src="/food.jpg"
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Volunteer Distribution"
