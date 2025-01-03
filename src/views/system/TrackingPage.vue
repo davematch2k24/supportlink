@@ -1,61 +1,15 @@
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-
-const theme = ref('light')
-const formData = ref({
-  fullName: '',
-  phoneNumber: '',
-  emailAddress: '',
-  homeAddress: '',
-  numberOfFamilyMembers: '',
-  requestType: '',
-  requestPurpose: '',
-  status: 'Pending', // Default status
-})
-
-const rules = {
-  required: (value) => !!value || 'This field is required.',
-}
-
-const requestTypeOptions = ['Money Assistance', 'Food', 'Housing', 'Guidance']
-
-const router = useRouter()
-
-onMounted(() => {
-  const firstPageData = JSON.parse(localStorage.getItem('firstPageData'))
-  if (firstPageData) {
-    Object.assign(formData.value, firstPageData)
-  }
-})
-
-function generateTrackingNumber() {
-  return Math.random().toString(36).substring(2, 12).toUpperCase()
-}
-
-function handleSubmit() {
-  if (!formData.value.requestType || !formData.value.requestPurpose) {
-    alert('Please fill out all required fields.')
-    return
-  }
-  const trackingNumber = generateTrackingNumber()
-  const submissionData = { ...formData.value, trackingNumber }
-  localStorage.setItem('submissionData', JSON.stringify(submissionData))
-  router.push(`/viewresult?trackingNumber=${trackingNumber}`)
-}
-</script>
-
 <template>
   <v-responsive class="border rounded">
     <v-app :theme="theme">
       <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
         <v-container>
-          <h2 class="white--text">Client Request Form</h2>
+          <h2 class="white--text">Track Your Package</h2>
         </v-container>
         <v-spacer></v-spacer>
       </v-app-bar>
 
       <v-main
+        class="pt-10"
         style="
           background-image: url('/public/background-forms.jpg');
           background-size: cover;
@@ -63,37 +17,32 @@ function handleSubmit() {
         "
       >
         <v-container>
-          <v-sheet class="mx-auto py-4 px-4" elevation="3" style="max-width: 800px">
-            <v-form @submit.prevent="handleSubmit">
-              <h3 class="text-center" style="margin-bottom: 20px">Personal Information</h3>
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-select
-                    v-model="formData.requestType"
-                    :items="requestTypeOptions"
-                    :rules="[rules.required]"
-                    label="Request Type"
-                  ></v-select>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-textarea
-                    v-model="formData.requestPurpose"
-                    :rules="[rules.required]"
-                    label="Request Purpose"
-                  ></v-textarea>
-                </v-col>
-              </v-row>
-              <v-btn
-                class="mt-2"
-                type="submit"
-                block
-                style="background-color: #ff8c00; color: white"
-                >Submit</v-btn
-              >
-            </v-form>
-          </v-sheet>
+          <v-row justify="center">
+            <v-col cols="12" md="8">
+              <v-sheet class="mx-auto mt-5 mb-2 py-4 px-4" elevation="3">
+                <h3 class="text-center">Enter Your Tracking Number</h3>
+                <v-form @submit.prevent="trackPackage">
+                  <v-row>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="trackingNumber"
+                        label="Tracking Number"
+                        placeholder="Enter Tracking Number"
+                        :rules="[rules.required]"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-btn
+                    class="mt-2"
+                    type="submit"
+                    block
+                    style="background-color: #ff8c00; color: white"
+                    >Track</v-btn
+                  >
+                </v-form>
+              </v-sheet>
+            </v-col>
+          </v-row>
         </v-container>
       </v-main>
 
@@ -123,10 +72,53 @@ function handleSubmit() {
   </v-responsive>
 </template>
 
-<style scoped>
-body {
-  overflow: hidden;
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const theme = ref('light')
+const trackingNumber = ref('')
+
+const rules = {
+  required: (value) => !!value || 'This field is required.',
 }
+
+const router = useRouter()
+
+function trackPackage() {
+  if (!trackingNumber.value) {
+    alert('Please enter a tracking number.')
+    return
+  }
+  router.push({ name: 'viewresult', query: { trackingNumber: trackingNumber.value } })
+}
+</script>
+
+<style scoped>
+.v-app-bar {
+  background-color: #ff8c00 !important;
+  color: white !important;
+}
+
+.v-main {
+  background-image: url('/public/background-forms.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  padding-top: 10rem !important; /* Added extra padding */
+}
+
+.v-footer {
+  background-color: #ff8c00 !important;
+  color: white !important;
+  height: 12px !important;
+}
+
+.v-footer p {
+  margin: 0 !important;
+  font-size: 14px !important;
+  line-height: 12px !important;
+}
+
 .register-view {
   display: flex;
   flex-direction: column;
@@ -172,8 +164,11 @@ body {
   margin-top: 20px;
   font-size: 0.9rem;
   text-align: left;
-  margin: 0;
-  padding: 0;
+}
+
+.signup-link a {
+  color: #4caf50;
+  text-decoration: none;
 }
 
 .main-content {
@@ -185,13 +180,13 @@ body {
   padding-top: 0;
   padding-bottom: 0;
   margin: 0;
-  height: 16px;
+  height: 12px;
 }
 
 .footer-text {
   margin: 0;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 12px;
 }
 
 @media (max-width: 600px) {

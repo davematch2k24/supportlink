@@ -1,16 +1,17 @@
 <script>
+import HeaderNav from '@/components/navigation/HeaderNav.vue'
 import FooterNav from '@/components/navigation/FooterNav.vue'
 import TextField from '@/components/navigation/TextField.vue'
-import CustomButton from '@/components/navigation/Button.vue'
+import Button from '@/components/navigation/Button.vue'
 import { RouterLink } from 'vue-router'
 
 export default {
   name: 'LoginView',
   components: {
+    HeaderNav,
     FooterNav,
     TextField,
-    CustomButton,
-    RouterLink,
+    Button,
   },
   data() {
     return {
@@ -36,11 +37,9 @@ export default {
         <form @submit.prevent="handleLogin" class="login-form">
           <TextField label="Email" type="email" v-model="email" required />
           <TextField label="Password" type="password" v-model="password" required />
-          <CustomButton text="Login" />
+          <Button text="Login" type="submit" />
+          <!-- Ensure the text prop is set to 'Login' -->
         </form>
-        <p class="signup-link">
-          Don't have an account? <RouterLink to="/register">Sign up</RouterLink>
-        </p>
       </div>
     </section>
 
