@@ -10,8 +10,6 @@ export default {
     },
     redirectToTrackingPage() {
       this.$router.push('/trackingpage') // Replace with your actual tracking page route
-
-      this.$router.push('/requestform') // Replace with your actual request form route
     },
   },
 }
@@ -59,10 +57,10 @@ export default {
 
               <p class="mt-2">
                 Follow up on your service request?
-                <a href="#" @click.prevent="redirectToTrackingPage">Track here</a>.
+                <a href="/src/views/system/TrackingPage.vue" @click.prevent="redirectToTrackingPage"
+                  >Track here</a
+                >.
               </p>
-
-              <p class="mt-2">Follow up on your service request? Track here.</p>
             </v-col>
           </v-row>
         </v-col>
