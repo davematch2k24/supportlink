@@ -121,8 +121,6 @@ body {
   color: white;
 }
 
-}
-
 .footer-link {
   color: white;
   text-decoration: none;
@@ -157,8 +155,6 @@ body {
   max-width: 800px; /* Increased max-width */
   width: 100%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
 }
 
 .register-section {
@@ -196,8 +192,6 @@ body {
   margin-top: 20px;
   font-size: 1.2rem; /* Increased font size */
   text-align: left;
-}
-
 }
 
 .signup-link {
