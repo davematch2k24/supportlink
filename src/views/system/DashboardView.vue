@@ -121,12 +121,44 @@ body {
   color: white;
 }
 
+}
+
+.footer-link {
+  color: white;
+  text-decoration: none;
+}
+
+.footer-divider {
+  margin: 0 8px;
+  color: white;
+}
+
 .register-view {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
   min-height: 100vh;
+}
+
+.register-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  flex: 1;
+  padding: 20px;
+}
+
+.register-container {
+  background: #fff;
+  border-radius: 10px;
+  padding: 50px; /* Increased padding */
+  max-width: 800px; /* Increased max-width */
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 }
 
 .register-section {
@@ -158,6 +190,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 25px; /* Increased gap */
+}
+
+.signup-link {
+  margin-top: 20px;
+  font-size: 1.2rem; /* Increased font size */
+  text-align: left;
+}
+
 }
 
 .signup-link {
