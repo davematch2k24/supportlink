@@ -1,69 +1,31 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { supabase } from '@/utils/supabaseClient' // Ensure this path is correct
 import { useRouter } from 'vue-router'
-import { logout, user, logActivity } from '@/utils/authService' // Ensure this path is correct
-import Notifications from '@/components/navigation/UserNotifications.vue' // Ensure this path is correct
+import { supabase } from '@/utils/supabaseClient' // Ensure this path is correct
+import { logout } from '@/utils/authService' // Ensure this path is correct
 
 const theme = ref('light')
-const requestsData = ref([])
+const resourcesData = ref([])
 const loading = ref(false)
 const search = ref('')
 const itemsPerPage = ref(10)
 const currentPage = ref(1)
 
-const headers = [
-  { text: 'Client ID', value: 'c_id' },
-  { text: 'Request Type', value: 'req_type' },
-  { text: 'Request Purpose', value: 'req_purposes' },
-  { text: 'Request Status', value: 'req_status' },
-  { text: 'Date of Request', value: 'date_of_req' },
-  { text: 'Tracking Number', value: 'tracking_number' },
-  { text: 'Actions', value: 'actions', sortable: false },
-]
-
 const router = useRouter()
 
 onMounted(async () => {
   loading.value = true
-  const { data, error } = await supabase.from('requests').select('*')
+  const { data, error } = await supabase.from('resources').select('*')
   loading.value = false
 
   if (error) {
-    console.error('Error fetching requests data:', error)
-    alert('Failed to fetch requests data. Please try again.')
+    console.error('Error fetching resources data:', error)
+    alert('Failed to fetch resources data. Please try again.')
     return
   }
 
-  requestsData.value = data
+  resourcesData.value = data
 })
-
-async function updateRequestStatus(requestId, status) {
-  const { error } = await supabase
-    .from('requests')
-    .update({ req_status: status })
-    .eq('id', requestId)
-
-  if (error) {
-    console.error('Error updating request status:', error)
-    alert('Failed to update request status. Please try again.')
-    return
-  }
-
-  // Refresh data
-  loading.value = true
-  const { data, error: fetchError } = await supabase.from('requests').select('*')
-  loading.value = false
-
-  if (fetchError) {
-    console.error('Error fetching requests data:', fetchError)
-    alert('Failed to fetch requests data. Please try again.')
-    return
-  }
-
-  requestsData.value = data
-  await logActivity(`Updated request status to ${status} for request ID ${requestId}`)
-}
 
 const handleLogout = async () => {
   await logout()
@@ -76,11 +38,11 @@ const handleLogout = async () => {
     <v-app :theme="theme">
       <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
         <v-container>
-          <h2 class="white--text">Requests Overview</h2>
+          <h2 class="white--text">Resources Overview</h2>
         </v-container>
         <v-spacer></v-spacer>
-        <v-btn text @click="navigateTo('requestsdata')" class="white--text">Requests</v-btn>
-        <v-btn text @click="navigateTo('resourcesdata')" class="white--text">Resources</v-btn>
+        <v-btn text @click="router.push('/requestsdata')" class="white--text">Requests</v-btn>
+        <v-btn text @click="router.push('/resourcesdata')" class="white--text">Resources</v-btn>
         <v-btn text @click="handleLogout" class="white--text">Logout</v-btn>
       </v-app-bar>
 
@@ -98,80 +60,37 @@ const handleLogout = async () => {
                 <template v-else>
                   <v-text-field
                     v-model="search"
-                    label="Search Requests"
+                    label="Search Resources"
                     class="mb-4"
                   ></v-text-field>
-                  <v-data-table
-                    :items="requestsData"
-                    :headers="headers"
-                    class="elevation-1"
-                    :search="search"
-                    :items-per-page="itemsPerPage"
-                    v-model:page="currentPage"
-                  >
-                    <template #top>
-                      <v-toolbar flat>
-                        <v-toolbar-title>Requests Data</v-toolbar-title>
-                        <v-divider class="mx-4" inset vertical></v-divider>
-                        <v-spacer></v-spacer>
-                      </v-toolbar>
-                    </template>
-                    <template #item="{ item }">
+                  <table class="resources-table">
+                    <thead>
                       <tr>
-                        <td>{{ item.c_id }}</td>
-                        <td>{{ item.req_type }}</td>
-                        <td>{{ item.req_purposes }}</td>
-                        <td>
-                          <v-chip
-                            :color="
-                              item.req_status === 'pending'
-                                ? 'orange'
-                                : item.req_status === 'approved'
-                                  ? 'green'
-                                  : 'red'
-                            "
-                            dark
-                          >
-                            {{ item.req_status }}
-                          </v-chip>
-                        </td>
-                        <td>{{ item.date_of_req }}</td>
-                        <td>{{ item.tracking_number }}</td>
-                        <td v-if="user.value.role === 'admin' || user.value.role === 'worker'">
-                          <v-menu>
-                            <template #activator="{ on, attrs }">
-                              <v-btn small icon v-bind="attrs" v-on="on">
-                                <v-icon>mdi-dots-vertical</v-icon>
-                              </v-btn>
-                            </template>
-                            <v-list>
-                              <v-list-item @click="updateRequestStatus(item.id, 'pending')">
-                                <v-list-item-title>Set as Pending</v-list-item-title>
-                              </v-list-item>
-                              <v-list-item @click="updateRequestStatus(item.id, 'approved')">
-                                <v-list-item-title>Set as Approved</v-list-item-title>
-                              </v-list-item>
-                              <v-list-item @click="updateRequestStatus(item.id, 'rejected')">
-                                <v-list-item-title>Set as Rejected</v-list-item-title>
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
-                        </td>
+                        <th class="text-center">Name</th>
+                        <th class="text-center">Type</th>
+                        <th class="text-center">Address</th>
+                        <th class="text-center">Contact</th>
+                        <th class="text-center">Quantity</th>
                       </tr>
-                    </template>
-                  </v-data-table>
+                    </thead>
+                    <tbody>
+                      <tr v-for="item in resourcesData" :key="item.id">
+                        <td class="text-center">{{ item.name }}</td>
+                        <td class="text-center">{{ item.type }}</td>
+                        <td class="text-center">{{ item.address }}</td>
+                        <td class="text-center">{{ item.res_contact }}</td>
+                        <td class="text-center">{{ item.qty }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                   <v-pagination
                     v-model="currentPage"
-                    :length="Math.ceil(requestsData.length / itemsPerPage)"
+                    :length="Math.ceil(resourcesData.length / itemsPerPage)"
                     :total-visible="5"
                     class="mt-4"
                   ></v-pagination>
                 </template>
               </v-sheet>
-            </v-col>
-            <!-- Notifications Sidebar -->
-            <v-col cols="12" md="4">
-              <Notifications />
             </v-col>
           </v-row>
         </v-container>
@@ -234,5 +153,27 @@ body {
 .v-sheet {
   background-color: white !important;
   border-radius: 8px !important;
+}
+
+.resources-table {
+  width: 100%;
+  margin-bottom: 16px;
+  border-collapse: collapse;
+}
+
+.resources-table th,
+.resources-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.resources-table th {
+  background-color: #f2f2f2;
+  color: black;
+  text-align: center;
+}
+
+.text-center {
+  text-align: center;
 }
 </style>

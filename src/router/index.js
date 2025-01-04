@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { supabase } from '@/utils/supabaseClient'
 import { user } from '@/utils/authService'
+import RequestsDataView from '@/views/system/RequestsDataView.vue'
 
 // Lazy load components
 const LandingPageView = () => import('@/views/system/LandingPageView.vue')
@@ -41,18 +43,23 @@ const routes = [
     path: '/requestsdata',
     name: 'requestsdata',
     component: RequestsData,
-    meta: { requiresAuth: true, roles: ['admin', 'worker'] },
+    meta: { requiresAuth: true },
   },
   {
     path: '/resourcesdata',
     name: 'resourcesdata',
     component: ResourcesData,
-    meta: { requiresAuth: true, roles: ['admin', 'worker'] },
+    meta: { requiresAuth: true },
   },
   {
     path: '/login',
     name: 'login',
     component: LoginWorker,
+  },
+  {
+    path: '/requestsdataview',
+    name: 'requestsdataview',
+    component: RequestsDataView,
   },
 ]
 
@@ -61,14 +68,30 @@ const router = createRouter({
   routes,
 })
 
-// Protect routes that require authentication and check for roles
-router.beforeEach((to, from, next) => {
+// Protect routes that require authentication
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!user.value) {
+    const authToken = localStorage.getItem('supabase.auth.token')
+
+    if (!authToken) {
       next({ path: '/login' })
-    } else if (!to.meta.roles.includes(user.value.role)) {
-      next({ path: '/' })
     } else {
+      // Fetch user details if not already available
+      if (!user.value) {
+        try {
+          const { data, error } = await supabase.auth.getUser(authToken)
+          if (error) {
+            console.error('Error fetching user:', error)
+            next({ path: '/login' })
+          } else {
+            user.value = data.user
+          }
+        } catch (err) {
+          console.error('Error fetching user:', err)
+          next({ path: '/login' })
+        }
+      }
+
       next()
     }
   } else {

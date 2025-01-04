@@ -1,38 +1,21 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { supabase } from '../../utils/supabase' // Adjusted import path
+import { supabase } from '../../utils/supabaseClient' // Ensure this is the correct path
 
 const theme = ref('light')
 const formData = ref({
-  fullName: '',
-  phoneNumber: '',
-  emailAddress: '',
-  homeAddress: '',
-  numberOfFamilyMembers: '',
   requestType: '',
   requestPurpose: '',
-  status: 'Pending', // Default status
 })
+
+const requestTypes = ['Money Assistance', 'Food', 'Housing', 'Guidance'] // Predefined request types
 
 const rules = {
   required: (value) => !!value || 'This field is required.',
 }
 
-const requestTypeOptions = ['Money Assistance', 'Food', 'Housing', 'Guidance']
-
 const router = useRouter()
-
-onMounted(() => {
-  const firstPageData = JSON.parse(localStorage.getItem('firstPageData'))
-  if (firstPageData) {
-    Object.assign(formData.value, firstPageData)
-  }
-})
-
-function generateTrackingNumber() {
-  return Math.random().toString(36).substring(2, 12).toUpperCase()
-}
 
 async function handleSubmit() {
   if (!formData.value.requestType || !formData.value.requestPurpose) {
@@ -40,41 +23,48 @@ async function handleSubmit() {
     return
   }
 
-  const trackingNumber = generateTrackingNumber()
+  const trackingNumber = localStorage.getItem('trackingNumber') // Retrieve the tracking number from localStorage
+  const dateOfRequest = new Date().toISOString() // Automatically fill in the date and time of the request
 
-  // Insert data into Supabase
-  const { error } = await supabase.from('requests').insert([
-    {
-      c_id: 1, // Example client ID, replace with actual data as needed
-      req_type: formData.value.requestType,
-      req_status: 'pending',
-      date_of_req: new Date(),
-      date_completion: null,
-      date_process: null,
-      req_purposes: formData.value.requestPurpose,
-      workers_id: null, // Initially null, replace with actual data if available
-      tracking_number: trackingNumber,
-    },
-  ])
+  console.log('Form Data:', JSON.parse(JSON.stringify(formData.value))) // Extract raw data
 
-  if (error) {
-    console.error('Error uploading data:', error)
+  try {
+    const { data, error } = await supabase.from('requests').insert([
+      {
+        tracking_number: trackingNumber,
+        req_type: formData.value.requestType,
+        req_purpose: formData.value.requestPurpose,
+        req_status: 'pending', // Default status
+        date_of_req: dateOfRequest,
+        date_completion: null, // Leave null initially
+        date_process: null, // Leave null initially
+        workers_id: null, // Leave null initially
+      },
+    ])
+
+    console.log('Supabase Response:', { data, error })
+
+    if (error) {
+      console.error('Error uploading data:', error.message)
+      alert('Failed to upload data. Please try again.')
+      return
+    }
+
+    alert('Request submitted successfully!')
+    router.push('/requestsdata')
+  } catch (err) {
+    console.error('Error in handleSubmit function:', err.message)
     alert('Failed to upload data. Please try again.')
-    return
   }
-
-  const submissionData = { ...formData.value, trackingNumber }
-  localStorage.setItem('submissionData', JSON.stringify(submissionData))
-  router.push(`/viewresult?trackingNumber=${trackingNumber}`)
 }
 </script>
 
 <template>
   <v-responsive class="border rounded">
     <v-app :theme="theme">
-      <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
+      <v-app-bar class="px-3" style="background-color: #ff8c00; color: white; margin-bottom: 0">
         <v-container>
-          <h2 class="white--text">Client Request Form</h2>
+          <h2 class="white--text" style="margin: 0">Client Request Form</h2>
         </v-container>
         <v-spacer></v-spacer>
       </v-app-bar>
@@ -84,40 +74,46 @@ async function handleSubmit() {
           background-image: url('/public/background-forms.jpg');
           background-size: cover;
           background-position: center;
+          padding-bottom: 0;
+          margin-bottom: 0;
         "
       >
-        <v-container>
-          <v-sheet class="mx-auto py-4 px-4" elevation="3" style="max-width: 800px">
-            <v-form @submit.prevent="handleSubmit">
-              <h3 class="text-center" style="margin-bottom: 20px">Request Information</h3>
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-select
-                    v-model="formData.requestType"
-                    :items="requestTypeOptions"
-                    :rules="[rules.required]"
-                    label="Request Type"
-                  ></v-select>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-textarea
-                    v-model="formData.requestPurpose"
-                    :rules="[rules.required]"
-                    label="Request Purpose"
-                  ></v-textarea>
-                </v-col>
-              </v-row>
-              <v-btn
-                class="mt-2"
-                type="submit"
-                block
-                style="background-color: #ff8c00; color: white"
-                >Submit</v-btn
-              >
-            </v-form>
-          </v-sheet>
+        <v-container style="padding-bottom: 0; margin-bottom: 0">
+          <v-row justify="center" style="margin-bottom: 0">
+            <v-col cols="12" md="8">
+              <v-sheet class="mx-auto py-3 px-3" elevation="3">
+                <h3 class="text-center" style="margin: 0 0 4px 0">Request Information</h3>
+                <v-form @submit.prevent="handleSubmit">
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-select
+                        v-model="formData.requestType"
+                        :items="requestTypes"
+                        :rules="[rules.required]"
+                        label="Request Type"
+                        style="margin: 0 0 4px 0"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        v-model="formData.requestPurpose"
+                        :rules="[rules.required]"
+                        label="Request Purpose"
+                        style="margin: 0 0 4px 0"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-btn
+                    class="mt-1"
+                    type="submit"
+                    block
+                    style="background-color: #ff8c00; color: white; margin: 0"
+                    >Submit</v-btn
+                  >
+                </v-form>
+              </v-sheet>
+            </v-col>
+          </v-row>
         </v-container>
       </v-main>
 
@@ -150,88 +146,5 @@ async function handleSubmit() {
 <style scoped>
 body {
   overflow: hidden;
-}
-.register-view {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  min-height: 100vh;
-}
-
-.register-section {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  width: 100%;
-  flex: 1;
-  padding: 20px;
-}
-
-.register-container {
-  background: #fff;
-  border-radius: 10px;
-  padding: 30px;
-  max-width: 400px;
-  width: 100%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0;
-  text-align: left;
-}
-
-.register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin: 0;
-  padding: 0;
-}
-
-.signup-link {
-  margin-top: 20px;
-  font-size: 0.9rem;
-  text-align: left;
-  margin: 0;
-  padding: 0;
-}
-
-.main-content {
-  padding-bottom: 0;
-  margin: 0;
-}
-
-.footer {
-  padding-top: 0;
-  padding-bottom: 0;
-  margin: 0;
-  height: 16px;
-}
-
-.footer-text {
-  margin: 0;
-  font-size: 12px;
-  line-height: 16px;
-}
-
-@media (max-width: 600px) {
-  .px-3 {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-  .py-4 {
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-  }
-  .mt-2 {
-    margin-top: 0.5rem !important;
-  }
-  .border.rounded {
-    border-radius: 5px !important;
-  }
 }
 </style>
