@@ -1,8 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabaseClient' // Ensure this path is correct
-import { logout } from '@/utils/authService' // Ensure this path is correct
+import { useRouter } from 'vue-router'
+import { logout, user, logActivity } from '@/utils/authService' // Ensure this path is correct
+import Notifications from '@/components/navigation/UserNotifications.vue' // Ensure this path is correct
 
 const theme = ref('light')
 const requestsData = ref([])
@@ -11,43 +12,62 @@ const search = ref('')
 const itemsPerPage = ref(10)
 const currentPage = ref(1)
 
+const headers = [
+  { text: 'Client ID', value: 'c_id' },
+  { text: 'Request Type', value: 'req_type' },
+  { text: 'Request Purpose', value: 'req_purposes' },
+  { text: 'Request Status', value: 'req_status' },
+  { text: 'Date of Request', value: 'date_of_req' },
+  { text: 'Tracking Number', value: 'tracking_number' },
+  { text: 'Actions', value: 'actions', sortable: false },
+]
+
 const router = useRouter()
 
 onMounted(async () => {
-  try {
-    loading.value = true
-    console.log('Fetching requests data...')
-    const { data, error } = await supabase.from('clients').select('tracking_number, name')
-    loading.value = false
+  loading.value = true
+  const { data, error } = await supabase.from('requests').select('*')
+  loading.value = false
 
-    if (error) {
-      console.error('Error fetching requests data:', error.message)
-      alert('Failed to fetch requests data. Please try again.')
-      return
-    }
-
-    requestsData.value = data
-    console.log('Fetched requests data:', data)
-  } catch (err) {
-    console.error('Unexpected error:', err)
-    alert('An unexpected error occurred. Please try again.')
-    loading.value = false
+  if (error) {
+    console.error('Error fetching requests data:', error)
+    alert('Failed to fetch requests data. Please try again.')
+    return
   }
+
+  requestsData.value = data
 })
+
+async function updateRequestStatus(requestId, status) {
+  const { error } = await supabase
+    .from('requests')
+    .update({ req_status: status })
+    .eq('id', requestId)
+
+  if (error) {
+    console.error('Error updating request status:', error)
+    alert('Failed to update request status. Please try again.')
+    return
+  }
+
+  // Refresh data
+  loading.value = true
+  const { data, error: fetchError } = await supabase.from('requests').select('*')
+  loading.value = false
+
+  if (fetchError) {
+    console.error('Error fetching requests data:', fetchError)
+    alert('Failed to fetch requests data. Please try again.')
+    return
+  }
+
+  requestsData.value = data
+  await logActivity(`Updated request status to ${status} for request ID ${requestId}`)
+}
 
 const handleLogout = async () => {
   await logout()
   router.push('/login')
-}
-
-const goToRequestDetails = (trackingNumber) => {
-  if (trackingNumber) {
-    console.log(`Navigating to details for tracking number: ${trackingNumber}`)
-    router.push(`/requestsdataview/${trackingNumber}`)
-  } else {
-    console.error('Tracking number is undefined.')
-    alert('Invalid tracking number.')
-  }
 }
 </script>
 
@@ -59,8 +79,8 @@ const goToRequestDetails = (trackingNumber) => {
           <h2 class="white--text">Requests Overview</h2>
         </v-container>
         <v-spacer></v-spacer>
-        <v-btn text @click="router.push('/requestsdata')" class="white--text">Requests</v-btn>
-        <v-btn text @click="router.push('/resourcesdata')" class="white--text">Resources</v-btn>
+        <v-btn text @click="navigateTo('requestsdata')" class="white--text">Requests</v-btn>
+        <v-btn text @click="navigateTo('resourcesdata')" class="white--text">Resources</v-btn>
         <v-btn text @click="handleLogout" class="white--text">Logout</v-btn>
       </v-app-bar>
 
@@ -81,25 +101,65 @@ const goToRequestDetails = (trackingNumber) => {
                     label="Search Requests"
                     class="mb-4"
                   ></v-text-field>
-                  <table class="requests-table">
-                    <thead>
+                  <v-data-table
+                    :items="requestsData"
+                    :headers="headers"
+                    class="elevation-1"
+                    :search="search"
+                    :items-per-page="itemsPerPage"
+                    v-model:page="currentPage"
+                  >
+                    <template #top>
+                      <v-toolbar flat>
+                        <v-toolbar-title>Requests Data</v-toolbar-title>
+                        <v-divider class="mx-4" inset vertical></v-divider>
+                        <v-spacer></v-spacer>
+                      </v-toolbar>
+                    </template>
+                    <template #item="{ item }">
                       <tr>
-                        <th class="text-center">Name</th>
-                        <th class="text-center">Tracking Number</th>
+                        <td>{{ item.c_id }}</td>
+                        <td>{{ item.req_type }}</td>
+                        <td>{{ item.req_purposes }}</td>
+                        <td>
+                          <v-chip
+                            :color="
+                              item.req_status === 'pending'
+                                ? 'orange'
+                                : item.req_status === 'approved'
+                                  ? 'green'
+                                  : 'red'
+                            "
+                            dark
+                          >
+                            {{ item.req_status }}
+                          </v-chip>
+                        </td>
+                        <td>{{ item.date_of_req }}</td>
+                        <td>{{ item.tracking_number }}</td>
+                        <td v-if="user.value.role === 'admin' || user.value.role === 'worker'">
+                          <v-menu>
+                            <template #activator="{ on, attrs }">
+                              <v-btn small icon v-bind="attrs" v-on="on">
+                                <v-icon>mdi-dots-vertical</v-icon>
+                              </v-btn>
+                            </template>
+                            <v-list>
+                              <v-list-item @click="updateRequestStatus(item.id, 'pending')">
+                                <v-list-item-title>Set as Pending</v-list-item-title>
+                              </v-list-item>
+                              <v-list-item @click="updateRequestStatus(item.id, 'approved')">
+                                <v-list-item-title>Set as Approved</v-list-item-title>
+                              </v-list-item>
+                              <v-list-item @click="updateRequestStatus(item.id, 'rejected')">
+                                <v-list-item-title>Set as Rejected</v-list-item-title>
+                              </v-list-item>
+                            </v-list>
+                          </v-menu>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="item in requestsData"
-                        :key="item.tracking_number"
-                        @click="goToRequestDetails(item.tracking_number)"
-                        style="cursor: pointer"
-                      >
-                        <td class="text-center">{{ item.name }}</td>
-                        <td class="text-center">{{ item.tracking_number }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                    </template>
+                  </v-data-table>
                   <v-pagination
                     v-model="currentPage"
                     :length="Math.ceil(requestsData.length / itemsPerPage)"
@@ -109,6 +169,10 @@ const goToRequestDetails = (trackingNumber) => {
                 </template>
               </v-sheet>
             </v-col>
+            <!-- Notifications Sidebar -->
+            <v-col cols="12" md="4">
+              <Notifications />
+            </v-col>
           </v-row>
         </v-container>
       </v-main>
@@ -116,10 +180,12 @@ const goToRequestDetails = (trackingNumber) => {
       <v-footer style="background-color: #ff8c00" border app>
         <v-container>
           <v-row justify="space-between">
+            <!-- Left-aligned text -->
             <v-col cols="12" sm="6" class="text-center text-sm-start">
-              <span>© 2024 - SupportLink | All Rights Reserved</span>
+              <span>Copyright © 2024 - SupportLink | All Rights Reserved</span>
             </v-col>
 
+            <!-- Right-aligned links in a single line -->
             <v-col cols="12" sm="6" class="text-center text-sm-end">
               <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
               <span class="footer-divider mx-2">|</span>
@@ -168,27 +234,5 @@ body {
 .v-sheet {
   background-color: white !important;
   border-radius: 8px !important;
-}
-
-.requests-table {
-  width: 100%;
-  margin-bottom: 16px;
-  border-collapse: collapse;
-}
-
-.requests-table th,
-.requests-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.requests-table th {
-  background-color: #f2f2f2;
-  color: black;
-  text-align: center;
-}
-
-.text-center {
-  text-align: center;
 }
 </style>
