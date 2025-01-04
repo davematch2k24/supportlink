@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { supabase } from '../../utils/supabase' // Adjusted import path
 
 const theme = ref('light')
 const trackingNumber = ref('')
@@ -8,13 +9,27 @@ const resultData = ref({})
 
 const route = useRoute()
 
-onMounted(() => {
+onMounted(async () => {
   trackingNumber.value = route.query.trackingNumber
-  const storedData = JSON.parse(localStorage.getItem('submissionData'))
-  if (storedData && storedData.trackingNumber === trackingNumber.value) {
-    resultData.value = storedData
-  } else {
-    alert('No data found for this tracking number.')
+  const { data, error } = await supabase
+    .from('requests')
+    .select('*')
+    .eq('tracking_number', trackingNumber.value)
+    .single()
+
+  if (error) {
+    console.error('Error fetching data:', error)
+    alert('Failed to fetch data. Please try again.')
+    return
+  }
+
+  const clientData = JSON.parse(localStorage.getItem('firstPageData')) || {}
+  resultData.value = {
+    ...clientData,
+    requestType: data.req_type,
+    requestPurpose: data.req_purposes,
+    status: data.req_status,
+    trackingNumber: data.tracking_number,
   }
 })
 </script>

@@ -1,23 +1,59 @@
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const theme = ref('light')
+const trackingNumber = ref('')
+
+const rules = {
+  required: (value) => !!value || 'This field is required.',
+}
+
+const router = useRouter()
+
+function isValidTrackingNumber(number) {
+  // Add your validation logic here, for example:
+  const regex = /^[A-Z0-9]{10,20}$/
+  return regex.test(number)
+}
+
+function trackPackage() {
+  if (!trackingNumber.value) {
+    alert('Please enter a tracking number.')
+    return
+  }
+
+  if (!isValidTrackingNumber(trackingNumber.value)) {
+    alert('Invalid tracking number. Please enter a valid tracking number.')
+    return
+  }
+
+  // Navigate to the ResultView component
+  router.push(`/viewresult?trackingNumber=${trackingNumber.value}`)
+}
+</script>
+
 <template>
   <v-responsive class="border rounded">
     <v-app :theme="theme">
       <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
         <v-container>
-          <h2 class="white--text">Track Your Package</h2>
+          <h2 class="white--text">Track Your Request</h2>
         </v-container>
         <v-spacer></v-spacer>
       </v-app-bar>
 
       <v-main
-        class="pt-10"
         style="
           background-image: url('/public/background-forms.jpg');
           background-size: cover;
           background-position: center;
+          padding-bottom: 0;
+          margin-bottom: 0;
         "
       >
-        <v-container>
-          <v-row justify="center">
+        <v-container style="padding-bottom: 0; margin-bottom: 0">
+          <v-row justify="center" style="margin-bottom: 0">
             <v-col cols="12" md="8">
               <v-sheet class="mx-auto mt-5 mb-2 py-4 px-4" elevation="3">
                 <h3 class="text-center">Enter Your Tracking Number</h3>
@@ -72,29 +108,11 @@
   </v-responsive>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const theme = ref('light')
-const trackingNumber = ref('')
-
-const rules = {
-  required: (value) => !!value || 'This field is required.',
-}
-
-const router = useRouter()
-
-function trackPackage() {
-  if (!trackingNumber.value) {
-    alert('Please enter a tracking number.')
-    return
-  }
-  router.push({ name: 'viewresult', query: { trackingNumber: trackingNumber.value } })
-}
-</script>
-
 <style scoped>
+body {
+  overflow: hidden;
+}
+
 .v-app-bar {
   background-color: #ff8c00 !important;
   color: white !important;
@@ -104,19 +122,21 @@ function trackPackage() {
   background-image: url('/public/background-forms.jpg') !important;
   background-size: cover !important;
   background-position: center !important;
-  padding-top: 10rem !important; /* Added extra padding */
 }
 
 .v-footer {
   background-color: #ff8c00 !important;
   color: white !important;
-  height: 12px !important;
 }
 
-.v-footer p {
-  margin: 0 !important;
-  font-size: 14px !important;
-  line-height: 12px !important;
+.footer-link {
+  color: white;
+  text-decoration: none;
+}
+
+.footer-divider {
+  margin: 0 8px;
+  color: white;
 }
 
 .register-view {
@@ -139,30 +159,28 @@ function trackPackage() {
 .register-container {
   background: #fff;
   border-radius: 10px;
-  padding: 30px;
-  max-width: 400px;
+  padding: 50px; /* Increased padding */
+  max-width: 800px; /* Increased max-width */
   width: 100%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .title {
-  font-size: 24px;
+  font-size: 36px; /* Increased font size */
   font-weight: bold;
-  margin: 0;
+  margin-bottom: 20px;
   text-align: left;
 }
 
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin: 0;
-  padding: 0;
+  gap: 25px; /* Increased gap */
 }
 
 .signup-link {
   margin-top: 20px;
-  font-size: 0.9rem;
+  font-size: 1.2rem; /* Increased font size */
   text-align: left;
 }
 
@@ -171,22 +189,46 @@ function trackPackage() {
   text-decoration: none;
 }
 
-.main-content {
-  padding-bottom: 0;
-  margin: 0;
+.tracking-number {
+  font-size: 28px; /* Increased font size */
+  margin-bottom: 20px;
 }
 
-.footer {
-  padding-top: 0;
-  padding-bottom: 0;
-  margin: 0;
-  height: 12px;
+.info-section {
+  margin: 30px 0; /* Added more margin */
+  font-size: 20px; /* Increased font size */
 }
 
-.footer-text {
-  margin: 0;
-  font-size: 14px;
-  line-height: 12px;
+.request-status {
+  font-size: 22px; /* Increased font size */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.circle {
+  display: inline-block;
+  width: 20px; /* Increased size */
+  height: 20px; /* Increased size */
+  border-radius: 50%;
+  margin-left: 10px; /* Added space before the circle */
+}
+
+/* Status circles */
+.pending .circle {
+  background-color: orange;
+}
+
+.ongoing .circle {
+  background-color: blue;
+}
+
+.rejected .circle {
+  background-color: red;
+}
+
+.accepted .circle {
+  background-color: green;
 }
 
 @media (max-width: 600px) {

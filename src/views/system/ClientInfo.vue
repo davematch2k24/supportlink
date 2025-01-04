@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '../../utils/supabase' // Adjusted import path
 
 const theme = ref('light')
 const formData = ref({
@@ -14,11 +15,13 @@ const formData = ref({
 const rules = {
   required: (value) => !!value || 'This field is required.',
   phoneNumber: (value) => /^\d+$/.test(value) || 'Phone number must contain only numbers.',
+  email: (value) => /.+@.+\..+/.test(value) || 'Invalid email address.',
+  number: (value) => !isNaN(value) || 'Must be a number.',
 }
 
 const router = useRouter()
 
-function handleSubmit() {
+async function handleSubmit() {
   if (
     !formData.value.fullName ||
     !formData.value.phoneNumber ||
@@ -29,8 +32,27 @@ function handleSubmit() {
     alert('Please fill out all required fields correctly.')
     return
   }
+
+  // Insert data into Supabase
+  const { error } = await supabase.from('clients').insert([
+    {
+      name: formData.value.fullName,
+      contact_number: formData.value.phoneNumber,
+      address: formData.value.homeAddress,
+      email: formData.value.emailAddress,
+      family_count: formData.value.numberOfFamilyMembers,
+    },
+  ])
+
+  if (error) {
+    console.error('Error uploading data:', error)
+    alert('Failed to upload data. Please try again.')
+    return
+  }
+
   // Save data to localStorage
   localStorage.setItem('firstPageData', JSON.stringify(formData.value))
+
   // Navigate to the ClientRequest page
   router.push('/clientrequest')
 }
@@ -84,7 +106,7 @@ function handleSubmit() {
                     <v-col cols="12" md="6">
                       <v-text-field
                         v-model="formData.numberOfFamilyMembers"
-                        :rules="[rules.required]"
+                        :rules="[rules.required, rules.number]"
                         label="Number of Family Members"
                         type="number"
                         style="margin: 0 0 4px 0"
@@ -109,6 +131,7 @@ function handleSubmit() {
                     <v-col cols="12" md="6">
                       <v-text-field
                         v-model="formData.emailAddress"
+                        :rules="[rules.email]"
                         label="Email Address (Optional)"
                         style="margin: 0 0 4px 0"
                       ></v-text-field>

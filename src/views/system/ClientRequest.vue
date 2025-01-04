@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '../../utils/supabase' // Adjusted import path
 
 const theme = ref('light')
 const formData = ref({
@@ -33,12 +34,35 @@ function generateTrackingNumber() {
   return Math.random().toString(36).substring(2, 12).toUpperCase()
 }
 
-function handleSubmit() {
+async function handleSubmit() {
   if (!formData.value.requestType || !formData.value.requestPurpose) {
     alert('Please fill out all required fields.')
     return
   }
+
   const trackingNumber = generateTrackingNumber()
+
+  // Insert data into Supabase
+  const { error } = await supabase.from('requests').insert([
+    {
+      c_id: 1, // Example client ID, replace with actual data as needed
+      req_type: formData.value.requestType,
+      req_status: 'pending',
+      date_of_req: new Date(),
+      date_completion: null,
+      date_process: null,
+      req_purposes: formData.value.requestPurpose,
+      workers_id: null, // Initially null, replace with actual data if available
+      tracking_number: trackingNumber,
+    },
+  ])
+
+  if (error) {
+    console.error('Error uploading data:', error)
+    alert('Failed to upload data. Please try again.')
+    return
+  }
+
   const submissionData = { ...formData.value, trackingNumber }
   localStorage.setItem('submissionData', JSON.stringify(submissionData))
   router.push(`/viewresult?trackingNumber=${trackingNumber}`)
@@ -65,7 +89,7 @@ function handleSubmit() {
         <v-container>
           <v-sheet class="mx-auto py-4 px-4" elevation="3" style="max-width: 800px">
             <v-form @submit.prevent="handleSubmit">
-              <h3 class="text-center" style="margin-bottom: 20px">Personal Information</h3>
+              <h3 class="text-center" style="margin-bottom: 20px">Request Information</h3>
               <v-row>
                 <v-col cols="12" md="6">
                   <v-select

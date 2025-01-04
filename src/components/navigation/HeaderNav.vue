@@ -1,14 +1,11 @@
 <template>
-  <header>
-    <nav>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Charity</a></li>
-        <li><a href="#">Event</a></li>
-        <li><a href="#">About Us</a></li>
-      </ul>
-    </nav>
-  </header>
+  <v-app-bar elevation="2" style="background-color: #ff6600">
+    <!-- Logo section: Aligns the logo to the start -->
+    <v-img src="/public/sllogo.png" contain width="100" class="mr-4"></v-img>
+
+    <v-btn text href="#">Requests</v-btn>
+    <v-btn text href="#">Resources</v-btn>
+  </v-app-bar>
 </template>
 
 <script>
@@ -18,24 +15,22 @@ export default {
 </script>
 
 <style scoped>
-header {
-  background: #fff;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/* Optional: Style for buttons or app bar */
+.v-app-bar {
+  padding: 0 20px;
 }
-nav ul {
-  list-style: none;
-  display: flex;
-  justify-content: center;
-  padding: 0;
-  margin: 0;
-}
-nav ul li {
-  margin: 0 15px;
-}
-nav ul li a {
-  text-decoration: none;
-  color: #333;
+
+.v-btn {
   font-weight: bold;
+  text-transform: none;
+  color: #333;
+}
+
+.v-btn:hover {
+  color: #4caf50; /* Add hover effect */
+}
+
+.v-img {
+  max-width: 100px; /* Adjust logo width */
 }
 </style>
