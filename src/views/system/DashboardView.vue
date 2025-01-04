@@ -121,12 +121,44 @@ body {
   color: white;
 }
 
+}
+
+.footer-link {
+  color: white;
+  text-decoration: none;
+}
+
+.footer-divider {
+  margin: 0 8px;
+  color: white;
+}
+
 .register-view {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
   min-height: 100vh;
+}
+
+.register-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  flex: 1;
+  padding: 20px;
+}
+
+.register-container {
+  background: #fff;
+  border-radius: 10px;
+  padding: 50px; /* Increased padding */
+  max-width: 800px; /* Increased max-width */
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 }
 
 .register-section {
@@ -166,6 +198,14 @@ body {
   text-align: left;
 }
 
+}
+
+.signup-link {
+  margin-top: 20px;
+  font-size: 1.2rem; /* Increased font size */
+  text-align: left;
+}
+
 .signup-link a {
   color: #4caf50;
   text-decoration: none;
@@ -174,6 +214,23 @@ body {
 .tracking-number {
   font-size: 28px; /* Increased font size */
   margin-bottom: 20px;
+}
+
+/* Add the animation for the image */
+.float-animation {
+  animation: float 3s ease-in-out infinite; /* Infinite up-and-down animation */
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0); /* Start at the original position */
+  }
+  50% {
+    transform: translateY(-20px); /* Move up 20px */
+  }
+  100% {
+    transform: translateY(0); /* Return to the original position */
+  }
 }
 
 .info-section {
