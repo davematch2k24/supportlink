@@ -54,10 +54,7 @@ export default {
                 <v-icon class="me-3" left>mdi-account-group</v-icon>
                 Client
               </v-btn>
-              <p class="mt-2">
-                Follow up on your service request?
-                <a href="#" @click.prevent="redirectToTrackingPage">Track here</a>.
-              </p>
+              <p class="mt-2">Follow up on your service request? Track here.</p>
             </v-col>
           </v-row>
         </v-col>
