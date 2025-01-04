@@ -57,7 +57,7 @@ export default {
               <p class="mt-2">
                 Follow up on your service request?
                 <a href="#" @click.prevent="redirectToTrackingPage">Track here</a>.
-
+              </p>
               <p class="mt-2">
                 Follow up on your service request?
                 <a href="/src/views/system/TrackingPage.vue" @click.prevent="redirectToTrackingPage"
