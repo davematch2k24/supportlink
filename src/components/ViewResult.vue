@@ -1,6 +1,7 @@
 <script setup>
+// filepath: /d:/Personal Files/Boj's Files/Coding/SupportLink/src/components/ViewResult.vue
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabaseClient'
 
 // Import Vuetify components
@@ -13,15 +14,21 @@ import {
   VFooter,
   VSheet,
   VMain,
-  VSpacer,
   VDivider,
+  VBtn,
+  VIcon,
+  VSpacer,
 } from 'vuetify/components'
+
+// Import mdi icons
+import '@mdi/font/css/materialdesignicons.css'
 
 const theme = ref('light')
 const trackingNumber = ref('')
 const resultData = ref({})
 
 const route = useRoute()
+const router = useRouter()
 
 onMounted(async () => {
   try {
@@ -57,21 +64,29 @@ onMounted(async () => {
     alert('An unexpected error occurred. Please try again.')
   }
 })
+
+function goHome() {
+  router.push('/')
+}
 </script>
 
 <template>
   <v-app :theme="theme">
     <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
       <v-container>
-        <v-row>
-          <v-col cols="12" class="text-left">
-            <h2 class="white--text">
-              <strong>Tracking Number: {{ trackingNumber }}</strong>
-            </h2>
-          </v-col>
+        <v-row class="d-flex align-center">
+          <strong>Tracking Number: {{ trackingNumber }}</strong>
+          <v-spacer />
+          <v-spacer />
+          <v-spacer />
+          <div>
+            <v-btn icon class="home-btn" @click="goHome">
+              <v-icon color="white"> mdi-home </v-icon>
+            </v-btn>
+          </div>
+          <v-spacer />
         </v-row>
       </v-container>
-      <v-spacer />
     </v-app-bar>
 
     <v-main
@@ -177,6 +192,11 @@ body {
 .footer-divider {
   margin: 0 8px;
   color: white;
+}
+
+.home-btn:hover {
+  background-color: green !important;
+  color: white !important;
 }
 
 .register-view {
