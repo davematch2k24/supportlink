@@ -1,43 +1,75 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { supabase } from '../utils/supabaseClient' // Adjusted import path
+import { useRoute, useRouter } from 'vue-router'
+import { supabase } from '@/utils/supabaseClient'
+import {
+  VApp,
+  VAppBar,
+  VContainer,
+  VRow,
+  VCol,
+  VFooter,
+  VSheet,
+  VMain,
+  VProgressLinear,
+  VChip,
+  VBtn,
+  VDivider,
+  VSpacer,
+  VDialog,
+  VCard,
+  VCardTitle,
+  VCardText,
+  VCardActions,
+} from 'vuetify/components'
 
-const theme = ref('light')
+// Display Data
+const clientData = ref({})
 const requestData = ref({})
-const trackingNumber = ref('')
 const statuses = ['Pending', 'Onprocess', 'Rejected', 'Approved']
-const loading = ref(false)
+const dialog = ref(false)
+const dialogStatus = ref('')
 
 const route = useRoute()
+const router = useRouter()
 
-onMounted(async () => {
-  trackingNumber.value = route.query.id
-  if (!trackingNumber.value) {
-    alert('Tracking number not provided.')
-    return
+// Function to fetch request and client data
+async function fetchRequestAndClientData(trackingNumber) {
+  try {
+    const { data: requestDataResponse, error: requestError } = await supabase
+      .from('requests')
+      .select('*')
+      .eq('tracking_number', trackingNumber)
+      .single()
+
+    if (requestError) {
+      console.error('Error fetching request data:', requestError.message)
+      alert('Failed to fetch request data. Please try again.')
+      return
+    }
+    requestData.value = requestDataResponse
+
+    const { data: clientDataResponse, error: clientError } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('id', requestData.value.client_id)
+      .single()
+
+    if (clientError) {
+      console.error('Error fetching client data:', clientError.message)
+      alert('Failed to fetch client data. Please try again.')
+      return
+    }
+    clientData.value = clientDataResponse
+  } catch (err) {
+    console.error('Unhandled error:', err.message)
+    alert('An unexpected error occurred. Please try again.')
   }
-
-  loading.value = true
-  const { data, error } = await supabase
-    .from('requests')
-    .select('*')
-    .eq('id', trackingNumber.value)
-    .single()
-  loading.value = false
-
-  if (error) {
-    console.error('Error fetching request data:', error)
-    alert('Failed to fetch request data. Please try again.')
-    return
-  }
-
-  requestData.value = data
-})
+}
 
 async function updateStatus(status) {
   if (
-    !trackingNumber.value ||
+    !requestData.value.tracking_number ||
     requestData.value.req_status === 'Rejected' ||
     requestData.value.req_status === 'Approved'
   ) {
@@ -47,7 +79,7 @@ async function updateStatus(status) {
   const { error } = await supabase
     .from('requests')
     .update({ req_status: status })
-    .eq('id', trackingNumber.value)
+    .eq('tracking_number', requestData.value.tracking_number)
 
   if (error) {
     console.error('Error updating request status:', error)
@@ -57,6 +89,17 @@ async function updateStatus(status) {
 
   requestData.value.req_status = status
   alert(`Request status updated to ${status}.`)
+}
+
+onMounted(() => {
+  const trackingNumber = route.query.trackingNumber
+  if (trackingNumber) {
+    fetchRequestAndClientData(trackingNumber)
+  }
+})
+
+function goHome() {
+  router.push('/')
 }
 
 function getStatusColor(status) {
@@ -73,173 +116,127 @@ function getStatusColor(status) {
       return 'grey'
   }
 }
+
+function confirmStatusChange(status) {
+  dialogStatus.value = status
+  dialog.value = true
+}
+
+function handleDialogConfirm() {
+  updateStatus(dialogStatus.value)
+  dialog.value = false
+}
 </script>
 
 <template>
-  <v-responsive class="border rounded">
-    <v-app :theme="theme">
-      <v-app-bar
-        class="px-3"
-        style="background-color: #ff8c00; color: white"
-      >
-        <v-container>
-          <h2 class="white--text">
-            Request Details
-          </h2>
-        </v-container>
-        <v-spacer />
-      </v-app-bar>
+  <v-app>
+    <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
+      <v-container>
+        <v-row class="d-flex align-center">
+          <strong>Tracking Number: {{ requestData.tracking_number }}</strong>
+          <v-spacer />
+          <div>
+            <v-btn icon class="home-btn" @click="goHome">
+              <v-icon color="white"> mdi-home </v-icon>
+            </v-btn>
+          </div>
+        </v-row>
+      </v-container>
+    </v-app-bar>
 
-      <v-main
-        style="
-          background-image: url('/src/assets/images/background-forms.jpg');
-          background-size: cover;
-          background-position: center;
-          padding-bottom: 0;
-          margin-bottom: 0;
-        "
-      >
-        <v-container style="padding-bottom: 0; margin-bottom: 0">
-          <v-row
-            justify="center"
-            style="margin-bottom: 0"
-          >
-            <v-col
-              cols="12"
-              md="8"
-            >
-              <v-sheet
-                class="mx-auto py-3 px-3"
-                elevation="3"
-              >
-                <v-progress-linear
-                  v-if="loading"
-                  indeterminate
-                  color="orange"
-                />
-                <template v-else>
-                  <h3
-                    class="text-center"
-                    style="margin: 0 0 4px 0"
-                  >
-                    Request Summary
-                  </h3>
-                  <v-divider />
-                  <v-row>
-                    <v-col cols="12">
-                      <p><strong>Full Name:</strong> {{ requestData?.name }}</p>
-                      <p>
-                        <strong>Home Address:</strong>
-                        {{ requestData?.address }}
-                      </p>
-                      <p>
-                        <strong>Contact Number:</strong>
-                        {{ requestData?.contact_number }}
-                      </p>
-                      <p><strong>Email Address:</strong> {{ requestData?.email }}</p>
-                      <p>
-                        <strong>Number of Family Members:</strong>
-                        {{ requestData?.family_count }}
-                      </p>
-                      <p>
-                        <strong>Request Type:</strong>
-                        {{ requestData?.req_type }}
-                      </p>
-                      <p>
-                        <strong>Request Purpose:</strong>
-                        {{ requestData?.req_purpose }}
-                      </p>
-                      <p>
-                        <strong>Request Status:</strong>
-                        <v-chip
-                          :color="getStatusColor(requestData?.req_status)"
-                          dark
-                        >
-                          {{ requestData?.req_status }}
-                        </v-chip>
-                      </p>
-                      <p>
-                        <strong>Tracking Number:</strong>
-                        {{ requestData?.tracking_number }}
-                      </p>
-                      <p>
-                        <strong>Date of Request:</strong>
-                        {{ requestData?.date_of_req }}
-                      </p>
-                    </v-col>
-                  </v-row>
-                  <v-divider />
-                  <v-row>
-                    <v-col cols="12">
-                      <h3>Change Status</h3>
-                      <v-btn
-                        v-for="status in statuses"
-                        :key="status"
-                        :color="getStatusColor(status)"
-                        :disabled="
-                          requestData?.req_status === 'Rejected' ||
-                            requestData?.req_status === 'Approved'
-                        "
-                        @click="updateStatus(status)"
-                      >
-                        {{ status }}
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </template>
-              </v-sheet>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-main>
+    <v-main
+      class="d-flex justify-center align-center"
+      style="
+        background-image: url('/src/assets/images/background-forms.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 10px 0;
+      "
+    >
+      <v-container class="fill-height">
+        <v-row class="d-flex justify-center align-center">
+          <v-col cols="12" md="8">
+            <v-card class="mx-auto py-1 px-4" elevation="3" style="max-width: 800px">
+              <div class="info-section">
+                <p><strong>Full Name:</strong> {{ clientData.name }}</p>
+                <p><strong>Phone Number:</strong> {{ clientData.contact_number }}</p>
+                <p><strong>Email Address:</strong> {{ clientData.email }}</p>
+                <p><strong>Home Address:</strong> {{ clientData.address }}</p>
+                <p><strong>Number of Family Members:</strong> {{ clientData.family_count }}</p>
+              </div>
+              <v-divider />
+              <div class="info-section">
+                <p><strong>Request Type:</strong> {{ requestData.req_type }}</p>
+                <p><strong>Request Purpose:</strong> {{ requestData.req_purpose }}</p>
+              </div>
+              <v-divider />
+              <div class="info-section">
+                <p class="request-status">
+                  <strong>Request Status:</strong>
+                  <span :class="(requestData.req_status || 'pending').toLowerCase()">
+                    <span class="circle" /> {{ requestData.req_status || 'Pending' }}
+                  </span>
+                </p>
+              </div>
+              <div class="info-section">
+                <p><strong>Date of Request:</strong> {{ requestData.date_of_req }}</p>
+              </div>
+              <v-divider />
+              <div class="info-section">
+                <h3>Change Status</h3>
+                <v-btn
+                  v-for="status in statuses"
+                  :key="status"
+                  :color="getStatusColor(status)"
+                  :disabled="
+                    requestData?.req_status === 'Rejected' || requestData?.req_status === 'Approved'
+                  "
+                  @click="
+                    status === 'Rejected' || status === 'Approved'
+                      ? confirmStatusChange(status)
+                      : updateStatus(status)
+                  "
+                >
+                  {{ status }}
+                </v-btn>
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
 
-      <v-footer
-        style="background-color: #ff8c00"
-        border
-        app
-      >
-        <v-container>
-          <v-row justify="space-between">
-            <!-- Left-aligned text -->
-            <v-col
-              cols="12"
-              sm="6"
-              class="text-center text-sm-start"
-            >
-              <span>Copyright © 2024 - SupportLink | All Rights Reserved</span>
-            </v-col>
+    <v-dialog v-model="dialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline"> Confirm Status Change </v-card-title>
+        <v-card-text>Are you sure you want to change the status to {{ dialogStatus }}?</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="green darken-1" text @click="dialog = false"> Cancel </v-btn>
+          <v-btn color="green darken-1" text @click="handleDialogConfirm"> Confirm </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-            <!-- Right-aligned links in a single line -->
-            <v-col
-              cols="12"
-              sm="6"
-              class="text-center text-sm-end"
-            >
-              <a
-                href="/privacy-policy"
-                class="footer-link"
-              >Privacy Policy</a>
-              <span class="footer-divider mx-2">|</span>
-              <a
-                href="/terms-of-service"
-                class="footer-link"
-              >Terms of Service</a>
-              <span class="footer-divider mx-2">|</span>
-              <a
-                href="/faqs"
-                class="footer-link"
-              >FAQs</a>
-              <span class="footer-divider mx-2">|</span>
-              <a
-                href="/feedback"
-                class="footer-link"
-              >Feedback</a>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-footer>
-    </v-app>
-  </v-responsive>
+    <v-footer border app style="background-color: #ff8c00; padding: 0">
+      <v-container>
+        <v-row justify="space-between" style="margin: 0; padding: 0">
+          <v-col cols="12" sm="6" class="text-center text-sm-start">
+            <span>© 2024 - SupportLink | All Rights Reserved</span>
+          </v-col>
+          <v-col cols="12" sm="6" class="text-center text-sm-end">
+            <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
+            <span class="footer-divider mx-2">|</span>
+            <a href="/terms-of-service" class="footer-link">Terms of Service</a>
+            <span class="footer-divider mx-2">|</span>
+            <a href="/faqs" class="footer-link">FAQs</a>
+            <span class="footer-divider mx-2">|</span>
+            <a href="/feedback" class="footer-link">Feedback</a>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-footer>
+  </v-app>
 </template>
 
 <style scoped>
@@ -273,59 +270,9 @@ body {
   color: white;
 }
 
-.register-view {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  min-height: 100vh;
-}
-
-.register-section {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  width: 100%;
-  flex: 1;
-  padding: 20px;
-}
-
-.register-container {
-  background: #fff;
-  border-radius: 10px;
-  padding: 50px;
-  max-width: 800px;
-  width: 100%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.title {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
-.signup-link {
-  margin-top: 20px;
-  font-size: 1.2rem;
-  text-align: left;
-}
-
-.signup-link a {
-  color: #4caf50;
-  text-decoration: none;
-}
-
-.tracking-number {
-  font-size: 28px;
-  margin-bottom: 20px;
+.home-btn:hover {
+  background-color: green !important;
+  color: white !important;
 }
 
 .info-section {
@@ -348,7 +295,6 @@ body {
   margin-left: 10px;
 }
 
-/* Status circles */
 .pending .circle {
   background-color: orange;
 }
@@ -361,24 +307,7 @@ body {
   background-color: red;
 }
 
-.approved .circle {
+.accepted .circle {
   background-color: green;
-}
-
-@media (max-width: 600px) {
-  .px-3 {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-  .py-4 {
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
-  }
-  .mt-2 {
-    margin-top: 0.5rem !important;
-  }
-  .border.rounded {
-    border-radius: 5px !important;
-  }
 }
 </style>

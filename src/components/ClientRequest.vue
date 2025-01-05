@@ -1,9 +1,7 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabaseClient'
-
-// Import Vuetify components
 import {
   VApp,
   VAppBar,
@@ -12,21 +10,30 @@ import {
   VCol,
   VFooter,
   VSheet,
+  VMain,
+  VSpacer,
+  VForm,
   VSelect,
   VTextarea,
   VBtn,
-  VForm,
-  VMain,
-  VSpacer,
 } from 'vuetify/components'
 
-const theme = ref('light')
+// Form Data
 const formData = ref({
   requestType: '',
   requestPurpose: '',
 })
 const loading = ref(false)
 const router = useRouter()
+const route = useRoute()
+
+const client_id = ref(route.query.client_id)
+
+onMounted(() => {
+  if (!client_id.value) {
+    alert('Client information is missing or incomplete.')
+  }
+})
 
 function generateTrackingNumber() {
   return 'TRK-' + Math.random().toString(36).substr(2, 9).toUpperCase()
@@ -38,23 +45,17 @@ async function handleSubmit() {
     return
   }
 
-  // Retrieve client information from localStorage
-  const clientInfo = JSON.parse(localStorage.getItem('firstPageData'))
-
-  // Ensure clientInfo contains the necessary fields
-  if (!clientInfo || !clientInfo.emailAddress) {
-    alert('Client information is missing or incomplete.')
-    return
-  }
-
   // Generate a unique tracking number
   const trackingNumber = generateTrackingNumber()
 
-  // Insert data into Supabase
   loading.value = true
-  const { error } = await supabase.from('requests').insert([
+
+  console.log('Submitting request with client_id:', client_id.value) // Debugging log
+
+  // Insert data into Supabase
+  const { error: requestError } = await supabase.from('requests').insert([
     {
-      client_id: clientInfo.id, // Assuming client info has an id
+      client_id: client_id.value, // Use the client_id fetched from the clients table
       req_type: formData.value.requestType,
       req_purpose: formData.value.requestPurpose,
       req_status: 'pending',
@@ -62,10 +63,11 @@ async function handleSubmit() {
       date_of_req: new Date().toISOString(),
     },
   ])
+
   loading.value = false
 
-  if (error) {
-    console.error('Error uploading data:', error.message)
+  if (requestError) {
+    console.error('Error uploading data:', requestError.message)
     alert('Failed to upload data. Please try again.')
     return
   }
@@ -80,7 +82,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <v-app :theme="theme">
+  <v-app>
     <v-app-bar class="px-3" style="background-color: #ff8c00; color: white; margin-bottom: 0">
       <v-container>
         <h2 class="white--text" style="margin: 0">Request Information Form</h2>
@@ -126,6 +128,7 @@ async function handleSubmit() {
                   class="mt-1"
                   type="submit"
                   block
+                  :loading="loading"
                   style="background-color: #ff8c00; color: white; margin: 0"
                 >
                   Submit
@@ -140,12 +143,9 @@ async function handleSubmit() {
     <v-footer style="background-color: #ff8c00" border app>
       <v-container>
         <v-row justify="space-between">
-          <!-- Left-aligned text -->
           <v-col cols="12" sm="6" class="text-center text-sm-start">
             <span>© 2024 - SupportLink | All Rights Reserved</span>
           </v-col>
-
-          <!-- Right-aligned links in a single line -->
           <v-col cols="12" sm="6" class="text-center text-sm-end">
             <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
             <span class="footer-divider mx-2">|</span>

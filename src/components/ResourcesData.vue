@@ -13,7 +13,6 @@ import {
   VFooter,
   VSheet,
   VTextField,
-  VBtn,
   VMain,
   VSpacer,
   VProgressLinear,
@@ -23,6 +22,7 @@ import {
   VToolbarTitle,
   VDivider,
   VPagination,
+  VBtn,
 } from 'vuetify/components'
 
 const theme = ref('light')
@@ -33,12 +33,11 @@ const itemsPerPage = ref(10)
 const currentPage = ref(1)
 
 const headers = [
-  { text: 'Resource Type', value: 'res_type' },
-  { text: 'Description', value: 'description' },
-  { text: 'Location', value: 'location' },
+  { text: 'Type', value: 'res_type' },
+  { text: 'Name', value: 'name' },
+  { text: 'Address', value: 'location' },
   { text: 'Contact', value: 'contact' },
-  { text: 'Available Units', value: 'units' },
-  { text: 'Actions', value: 'actions', sortable: false },
+  { text: 'Quantity', value: 'units' },
 ]
 
 const router = useRouter()
@@ -124,13 +123,10 @@ function getResourceTypeColor(type) {
                           {{ item.res_type }}
                         </v-chip>
                       </td>
-                      <td>{{ item.description }}</td>
+                      <td>{{ item.name }}</td>
                       <td>{{ item.location }}</td>
                       <td>{{ item.contact }}</td>
                       <td>{{ item.units }}</td>
-                      <td>
-                        <v-btn small color="primary" @click="viewResource(item.id)"> View </v-btn>
-                      </td>
                     </tr>
                   </template>
                 </v-data-table>

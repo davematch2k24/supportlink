@@ -23,6 +23,7 @@ import {
   VToolbarTitle,
   VDivider,
   VPagination,
+  VIcon, // Added VIcon import
 } from 'vuetify/components'
 
 const theme = ref('light')
@@ -34,8 +35,7 @@ const currentPage = ref(1)
 
 const headers = [
   { text: 'Name', value: 'name' },
-  { text: 'Status', value: 'req_status' },
-  { text: 'Date', value: 'date_of_req' },
+  { text: 'Tracking Number', value: 'tracking_number' }, // Updated header
   { text: 'Actions', value: 'actions', sortable: false },
 ]
 
@@ -43,33 +43,42 @@ const router = useRouter()
 
 onMounted(async () => {
   loading.value = true
-  const { data, error } = await supabase.from('requests').select('*')
-  loading.value = false
+  try {
+    // Fetch clients data
+    const { data: clientsData, error: clientsError } = await supabase
+      .from('clients')
+      .select('id, name')
 
-  if (error) {
-    console.error('Error fetching requests data:', error)
-    alert('Failed to fetch requests data. Please try again.')
-    return
+    if (clientsError) throw clientsError
+
+    // Fetch requests data
+    const { data: requestsDataRaw, error: requestsError } = await supabase
+      .from('requests')
+      .select('id, client_id, tracking_number')
+
+    if (requestsError) throw requestsError
+
+    // Combine data based on client_id
+    const combinedData = requestsDataRaw.map((request) => {
+      const client = clientsData.find((client) => client.id === request.client_id)
+      return {
+        ...request,
+        name: client ? client.name : 'Unknown',
+      }
+    })
+
+    console.log('Combined data:', combinedData) // Added console log to check the combined data
+    requestsData.value = combinedData
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    alert('Failed to fetch data. Please try again.')
+  } finally {
+    loading.value = false
   }
-
-  requestsData.value = data
 })
 
-function viewRequest(requestId) {
-  router.push({ path: '/clientresult', query: { id: requestId } })
-}
-
-function getStatusColor(status) {
-  switch (status) {
-    case 'Completed':
-      return 'green'
-    case 'Rejected':
-      return 'red'
-    case 'Processing':
-      return 'blue'
-    default:
-      return 'orange'
-  }
+function viewRequest(trackingNumber) {
+  router.push({ path: '/clientresult', query: { trackingNumber } })
 }
 </script>
 
@@ -120,14 +129,13 @@ function getStatusColor(status) {
                   <template #item="{ item }">
                     <tr>
                       <td>{{ item.name }}</td>
+                      <!-- Displaying name from clients table -->
+                      <td>{{ item.tracking_number }}</td>
+                      <!-- Displaying tracking number from requests table -->
                       <td>
-                        <v-chip :color="getStatusColor(item.req_status)" dark>
-                          {{ item.req_status }}
-                        </v-chip>
-                      </td>
-                      <td>{{ item.date_of_req }}</td>
-                      <td>
-                        <v-btn small color="primary" @click="viewRequest(item.id)"> View </v-btn>
+                        <v-btn small color="primary" @click="viewRequest(item.tracking_number)">
+                          View
+                        </v-btn>
                       </td>
                     </tr>
                   </template>
@@ -184,7 +192,7 @@ body {
 
 .v-footer {
   background-color: #ff8c00 !important;
-  color: white !important;
+  color: white !important; /* Fixed colon issue */
 }
 
 .footer-link {
