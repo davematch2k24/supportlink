@@ -6,25 +6,23 @@ const notifications = ref([])
 
 onMounted(async () => {
   const { data, error } = await supabase.from('notifications').select('*')
-
   if (error) {
     console.error('Error fetching notifications:', error)
     return
   }
-
   notifications.value = data
 })
 </script>
 
 <template>
   <v-card>
-    <v-card-title class="headline">Notifications</v-card-title>
+    <v-card-title>Notifications</v-card-title>
     <v-list>
       <v-list-item v-for="notification in notifications" :key="notification.id">
-        <v-list-item-content>
+        <template v-slot:default>
           <v-list-item-title>{{ notification.title }}</v-list-item-title>
           <v-list-item-subtitle>{{ notification.message }}</v-list-item-subtitle>
-        </v-list-item-content>
+        </template>
       </v-list-item>
     </v-list>
   </v-card>
@@ -32,6 +30,6 @@ onMounted(async () => {
 
 <style scoped>
 .v-card {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 </style>

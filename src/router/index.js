@@ -1,59 +1,27 @@
+// Composables
 import { createRouter, createWebHistory } from 'vue-router'
-import { user } from '@/utils/authService'
 
-// Lazy load components
-const LandingPageView = () => import('@/views/system/LandingPageView.vue')
-const ClientInfo = () => import('@/views/system/ClientInfo.vue')
-const ClientRequest = () => import('@/views/system/ClientRequest.vue')
-const ViewResult = () => import('@/views/system/ViewResult.vue')
-const TrackingPage = () => import('@/views/system/TrackingPage.vue')
-const RequestsData = () => import('@/views/system/RequestsData.vue')
-const ResourcesData = () => import('@/views/system/ResourcesData.vue')
-const LoginWorker = () => import('@/components/system/LoginWorker.vue')
+// Import components
+import LandingPage from '@/components/LandingPage.vue'
+import ClientInfo from '@/components/ClientInfo.vue'
+import ClientRequest from '@/components/ClientRequest.vue'
+import ViewResult from '@/components/ViewResult.vue'
+import TrackingPage from '@/components/TrackingPage.vue'
+import LogIn from '@/components/LogIn.vue'
+import RequestsData from '@/components/RequestsData.vue'
+import ClientResult from '@/components/ClientResult.vue'
+import ResourcesData from '@/components/ResourcesData.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'landingpage',
-    component: LandingPageView,
-  },
-  {
-    path: '/clientinfo',
-    name: 'clientinfo',
-    component: ClientInfo,
-  },
-  {
-    path: '/clientrequest',
-    name: 'clientrequest',
-    component: ClientRequest,
-  },
-  {
-    path: '/viewresult',
-    name: 'viewresult',
-    component: ViewResult,
-  },
-  {
-    path: '/trackingpage',
-    name: 'trackingpage',
-    component: TrackingPage,
-  },
-  {
-    path: '/requestsdata',
-    name: 'requestsdata',
-    component: RequestsData,
-    meta: { requiresAuth: true, roles: ['admin', 'worker'] },
-  },
-  {
-    path: '/resourcesdata',
-    name: 'resourcesdata',
-    component: ResourcesData,
-    meta: { requiresAuth: true, roles: ['admin', 'worker'] },
-  },
-  {
-    path: '/login',
-    name: 'login',
-    component: LoginWorker,
-  },
+  { path: '/', component: LandingPage },
+  { path: '/client-info', component: ClientInfo },
+  { path: '/client-request', component: ClientRequest },
+  { path: '/viewresult', component: ViewResult },
+  { path: '/tracking', component: TrackingPage },
+  { path: '/login', component: LogIn },
+  { path: '/requestsdata', component: RequestsData },
+  { path: '/clientresult', component: ClientResult },
+  { path: '/resourcesdata', component: ResourcesData },
 ]
 
 const router = createRouter({
@@ -61,19 +29,23 @@ const router = createRouter({
   routes,
 })
 
-// Protect routes that require authentication and check for roles
-router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!user.value) {
-      next({ path: '/login' })
-    } else if (!to.meta.roles.includes(user.value.role)) {
-      next({ path: '/' })
+// Workaround for https://github.com/vitejs/vite/issues/11804
+router.onError((err, to) => {
+  if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
+    if (!localStorage.getItem('vuetify:dynamic-reload')) {
+      console.log('Reloading page to fix dynamic import error')
+      localStorage.setItem('vuetify:dynamic-reload', 'true')
+      location.assign(to.fullPath)
     } else {
-      next()
+      console.error('Dynamic import error, reloading page did not fix it', err)
     }
   } else {
-    next()
+    console.error(err)
   }
+})
+
+router.isReady().then(() => {
+  localStorage.removeItem('vuetify:dynamic-reload')
 })
 
 export default router
