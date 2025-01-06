@@ -15,6 +15,6 @@ export default createVuetify({
     defaultSet: 'mdi', // Make sure this matches the icon set used in your component
   },
   theme: {
-    defaultTheme: 'dark',
+    defaultTheme: 'light',
   },
 })

@@ -67,8 +67,13 @@ const handleLogin = async () => {
           <v-col cols="1" sm="1">
             <img :src="slLogo" alt="SupportLink Logo" class="pt-3" style="height: 65px" />
           </v-col>
+          <v-col cols="3" sm="3">
+            <v-btn color="yellow" outlined class="ml-3" @click="router.push('/')">
+              Landing Page
+            </v-btn>
+          </v-col>
           <v-spacer />
-          <v-col cols="11" sm="3">
+          <v-col cols="7" sm="3">
             <h2 class="white--text">Worker Login</h2>
           </v-col>
         </v-row>

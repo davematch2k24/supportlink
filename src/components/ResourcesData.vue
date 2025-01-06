@@ -56,6 +56,19 @@ function getResourceTypeColor(type) {
       return 'grey'
   }
 }
+
+function logout() {
+  supabase.auth
+    .signOut()
+    .then(() => {
+      // After logout, redirect to login page
+      router.push('/login')
+    })
+    .catch((error) => {
+      console.error('Logout error:', error)
+      alert('An error occurred during logout. Please try again.')
+    })
+}
 </script>
 
 <template>
@@ -73,7 +86,7 @@ function getResourceTypeColor(type) {
       </v-container>
       <v-spacer />
       <v-btn text class="white--text" @click="router.push('/requestsdata')"> Requests </v-btn>
-      <v-btn text class="white--text" @click="router.push('/login')"> Logout </v-btn>
+      <v-btn text class="white--text" @click="logout"> Logout </v-btn>
     </v-app-bar>
 
     <v-main
@@ -168,7 +181,9 @@ body {
 }
 
 .v-app-bar {
-  background-color: #ff8c00 !important;
+  background-image: url('/src/assets/images/worker.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
   color: white !important;
 }
 
@@ -179,7 +194,9 @@ body {
 }
 
 .v-footer {
-  background-color: #ff8c00 !important;
+  background-image: url('/src/assets/images/worker.jpg') !important;
+  background-size: cover !important;
+  background-position: center !important;
   color: white !important;
 }
 

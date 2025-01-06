@@ -1,23 +1,22 @@
 <template>
   <v-app :theme="theme">
     <!-- Top Bar with Track Number Button -->
-    <v-app-bar
-      class="px-3"
-      style="background-image: url('/src/assets/images/worker.jpg'); color: white"
-    >
+    <v-app-bar class="px-3" style="background-image: url('/images/worker.jpg'); color: white">
       <v-container>
         <v-row align="center" justify="space-between">
           <v-col cols="auto">
             <h2 class="white--text">Requests Overview</h2>
           </v-col>
           <v-col cols="auto">
-            <v-btn text class="white--text" @click="router.push('/tracking')"> Track Number </v-btn>
+            <v-btn text class="white--text" @click="router.push('/trackingpageworker')">
+              Track Number
+            </v-btn>
           </v-col>
         </v-row>
       </v-container>
       <v-spacer />
       <v-btn text class="white--text" @click="router.push('/resourcesdata')"> Resources </v-btn>
-      <v-btn text class="white--text" @click="router.push('/login')"> Logout </v-btn>
+      <v-btn text class="white--text" @click="logout"> Logout </v-btn>
     </v-app-bar>
 
     <!-- Main Content -->
@@ -40,7 +39,7 @@
                   v-model:page="currentPage"
                   :items="requestsData"
                   :headers="headers"
-                  class="elevation-1"
+                  class="elevation-0"
                   :search="search"
                   :items-per-page="itemsPerPage"
                 >
@@ -154,6 +153,9 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/utils/supabaseClient'
 
+// import workerImage from '@/assets/images/worker.jpg'
+// import backgroundFormsImage from '@/assets/images/background-forms.jpg'
+// import slLogo from '@/assets/images/sllogo.png'
 const theme = ref('light')
 const requestsData = ref([])
 const loading = ref(false)
@@ -273,6 +275,22 @@ function getStatusColor(status) {
       return 'grey'
   }
 }
+
+// Logout function
+function logout() {
+  console.log('Logout clicked') // Added for debugging
+  supabase.auth
+    .signOut()
+    .then(() => {
+      // After logout, redirect to login page
+      console.log('Logout successful')
+      router.push('/login')
+    })
+    .catch((error) => {
+      console.error('Logout error:', error)
+      alert('An error occurred during logout. Please try again.')
+    })
+}
 </script>
 
 <style scoped>
@@ -282,6 +300,7 @@ body {
 
 .v-app-bar {
   background-image: url('/src/assets/images/worker.jpg') !important;
+  background-size: cover !important;
   color: white !important;
 }
 
@@ -293,6 +312,7 @@ body {
 
 .v-footer {
   background-image: url('/src/assets/images/worker.jpg') !important;
+  background-size: cover !important;
   color: white !important;
 }
 

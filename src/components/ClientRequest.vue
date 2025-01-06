@@ -203,7 +203,7 @@ body {
 }
 
 .v-sheet {
-  background-color: #a8a4a4 !important;
+  background-color: #ffffff !important;
   border-radius: 8px !important;
 }
 
