@@ -1,6 +1,24 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '../utils/supabaseClient' // Adjusted import path
+
+// Import necessary Vuetify components
+import {
+  VApp,
+  VMain,
+  VForm,
+  VTextField,
+  VBtn,
+  VRow,
+  VCol,
+  VContainer,
+  VSpacer,
+  VFooter,
+  VSheet,
+  VResponsive,
+  VAppBar,
+} from 'vuetify/components'
 
 const theme = ref('light')
 const formData = ref({
@@ -14,11 +32,13 @@ const formData = ref({
 const rules = {
   required: (value) => !!value || 'This field is required.',
   phoneNumber: (value) => /^\d+$/.test(value) || 'Phone number must contain only numbers.',
+  email: (value) => /.+@.+\..+/.test(value) || 'Invalid email address.',
+  number: (value) => !isNaN(value) || 'Must be a number.',
 }
 
 const router = useRouter()
 
-function handleSubmit() {
+async function handleSubmit() {
   if (
     !formData.value.fullName ||
     !formData.value.phoneNumber ||
@@ -29,10 +49,33 @@ function handleSubmit() {
     alert('Please fill out all required fields correctly.')
     return
   }
+
+  const clientData = {
+    name: formData.value.fullName,
+    contact_number: formData.value.phoneNumber,
+    address: formData.value.homeAddress,
+    email: formData.value.emailAddress,
+    family_count: formData.value.numberOfFamilyMembers,
+  }
+
+  console.log('Client Data:', clientData)
+
+  // Insert data into Supabase
+  const { data, error } = await supabase.from('clients').insert([clientData]).select()
+
+  if (error) {
+    console.error('Error uploading data:', error)
+    alert('Failed to upload data. Please try again.')
+    return
+  }
+
+  const clientId = data[0].id
+
   // Save data to localStorage
   localStorage.setItem('firstPageData', JSON.stringify(formData.value))
-  // Navigate to the ClientRequest page
-  router.push('/clientrequest')
+
+  // Navigate to the ClientRequest page with client_id as a query parameter
+  router.push({ path: '/client-request', query: { client_id: clientId } })
 }
 </script>
 
@@ -43,12 +86,12 @@ function handleSubmit() {
         <v-container>
           <h2 class="white--text" style="margin: 0">Client Information Form</h2>
         </v-container>
-        <v-spacer></v-spacer>
+        <v-spacer />
       </v-app-bar>
 
       <v-main
         style="
-          background-image: url('/public/background-forms.jpg');
+          background-image: url('/src/assets/images/background-forms.jpg');
           background-size: cover;
           background-position: center;
           padding-bottom: 0;
@@ -68,7 +111,7 @@ function handleSubmit() {
                         :rules="[rules.required]"
                         label="Full Name"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
@@ -77,18 +120,18 @@ function handleSubmit() {
                         label="Home Address"
                         type="text"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12" md="6">
                       <v-text-field
                         v-model="formData.numberOfFamilyMembers"
-                        :rules="[rules.required]"
+                        :rules="[rules.required, rules.number]"
                         label="Number of Family Members"
                         type="number"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-row>
@@ -104,14 +147,15 @@ function handleSubmit() {
                         label="Phone Number"
                         type="text"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
                         v-model="formData.emailAddress"
+                        :rules="[rules.email]"
                         label="Email Address (Optional)"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-btn
@@ -119,8 +163,9 @@ function handleSubmit() {
                     type="submit"
                     block
                     style="background-color: #ff8c00; color: white; margin: 0"
-                    >Next</v-btn
                   >
+                    Next
+                  </v-btn>
                 </v-form>
               </v-sheet>
             </v-col>
@@ -128,13 +173,12 @@ function handleSubmit() {
         </v-container>
       </v-main>
 
-      <!-- Footer Section -->
       <v-footer style="background-color: #ff8c00" border app>
         <v-container>
           <v-row justify="space-between">
             <!-- Left-aligned text -->
             <v-col cols="12" sm="6" class="text-center text-sm-start">
-              <span>Copyright © 2024 - SupportLink | All Rights Reserved</span>
+              <span>© 2024 - SupportLink | All Rights Reserved</span>
             </v-col>
 
             <!-- Right-aligned links in a single line -->
@@ -239,6 +283,7 @@ body {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
   }
+
   .py-4 {
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;

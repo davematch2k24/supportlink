@@ -1,20 +1,3 @@
-<script>
-export default {
-  name: 'SupportLinkLayout',
-  methods: {
-    redirectToLoginForm() {
-      this.$router.push('/login') // Replace with your actual login form route
-    },
-    redirectToRequestForm() {
-      this.$router.push('/clientinfo') // Replace with your actual request form route
-    },
-    redirectToTrackingPage() {
-      this.$router.push('/trackingpage') // Replace with your actual tracking page route
-    },
-  },
-}
-</script>
-
 <template>
   <v-app>
     <v-responsive style="background-color: #a8e4ef">
@@ -22,12 +5,7 @@ export default {
       <v-row justify="center" class="pa-6" style="background-color: #a8e4ef">
         <!-- Left: Worker and Client Buttons -->
         <v-col cols="12" md="5" class="text-center">
-          <v-img
-            src="/sllogo.png"
-            max-width="50%"
-            class="mb-4 mx-auto"
-            alt="SupportLink Logo"
-          ></v-img>
+          <v-img src="/sllogo.png" max-width="50%" class="mb-4 mx-auto" alt="SupportLink Logo" />
 
           <v-row>
             <v-col cols="12" class="text-center">
@@ -35,9 +13,9 @@ export default {
                 block
                 color="teal lighten-2"
                 class="white--text text-h5"
-                @click="redirectToLoginForm"
+                @click="navigateTo('worker')"
               >
-                <v-icon class="me-3" left>mdi-account-hard-hat</v-icon>
+                <v-icon class="me-3" left> mdi-account-hard-hat </v-icon>
                 Worker
               </v-btn>
             </v-col>
@@ -49,34 +27,29 @@ export default {
                 block
                 color="orange lighten-2"
                 class="white--text text-h5"
-                @click="redirectToRequestForm"
+                @click="navigateTo('client')"
               >
-                <v-icon class="me-3" left>mdi-account-group</v-icon>
+                <v-icon class="me-3" left> mdi-account-group </v-icon>
                 Client
               </v-btn>
-              <p class="mt-2">
+              <p class="mt-5">
                 Follow up on your service request?
-                <a href="#" @click.prevent="redirectToTrackingPage">Track here</a>.
-
-              <p class="mt-2">
-                Follow up on your service request?
-                <a href="/src/views/system/TrackingPage.vue" @click.prevent="redirectToTrackingPage"
-                  >Track here</a
-                >
+                <v-btn text color="secondary" class="" @click="navigateTo('tracking')">
+                  Track here.
+                </v-btn>
               </p>
             </v-col>
           </v-row>
         </v-col>
 
         <!-- Right: Description and Images -->
-        <v-col cols="12" md="7" class="">
-          <!-- SupportLink Description -->
-          <h3 class="ms-5 me-3 my-8">
-            <h2>SupportLink</h2>
-            is designed to support the functionality of a community aid platform aimed at helping
-            social workers efficiently manage and respond to help requests from individuals within
-            their community.
-          </h3>
+        <v-col cols="12" md="7">
+          <h2 class="ms-5 me-3 my-8">SupportLink</h2>
+          <p>
+            SupportLink is designed to support the functionality of a community aid platform aimed
+            at helping social workers efficiently manage and respond to help requests from
+            individuals within their community.
+          </p>
 
           <!-- Images under the description -->
           <v-row class="mt-4" justify="center">
@@ -86,7 +59,7 @@ export default {
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Community Support"
-              ></v-img>
+              />
             </v-col>
             <v-col cols="12" sm="4" class="text-center">
               <v-img
@@ -94,7 +67,7 @@ export default {
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Support Session"
-              ></v-img>
+              />
             </v-col>
             <v-col cols="12" sm="4" class="text-center">
               <v-img
@@ -102,23 +75,20 @@ export default {
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Volunteer Distribution"
-              ></v-img>
+              />
             </v-col>
           </v-row>
         </v-col>
       </v-row>
 
       <!-- Footer Section -->
-
       <v-footer style="background-color: #ff8c00" border app>
         <v-container>
           <v-row justify="space-between">
-            <!-- Left-aligned text -->
             <v-col cols="12" sm="6" class="text-center text-sm-start">
-              <span>Copyright © 2024 - SupportLink | All Rights Reserved</span>
+              <span>© 2024 - SupportLink | All Rights Reserved</span>
             </v-col>
 
-            <!-- Right-aligned links in a single line -->
             <v-col cols="12" sm="6" class="text-center text-sm-end">
               <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
               <span class="footer-divider mx-2">|</span>
@@ -135,26 +105,65 @@ export default {
   </v-app>
 </template>
 
+<script>
+import { defineComponent } from 'vue'
+import { useRouter } from 'vue-router'
+import {
+  VApp,
+  VResponsive,
+  VRow,
+  VCol,
+  VImg,
+  VBtn,
+  VIcon,
+  VFooter,
+  VContainer,
+} from 'vuetify/components'
+
+export default defineComponent({
+  name: 'LandingPage',
+  components: {
+    VApp,
+    VResponsive,
+    VRow,
+    VCol,
+    VImg,
+    VBtn,
+    VIcon,
+    VFooter,
+    VContainer,
+  },
+  setup() {
+    const router = useRouter()
+
+    const navigateTo = (role) => {
+      if (role === 'client') {
+        router.push('/client-info') // Replace with your actual client form route
+      } else if (role === 'worker') {
+        router.push('/login') // Replace with your actual login form route
+      } else if (role === 'tracking') {
+        router.push('/tracking') // Replace with your actual tracking page route
+      }
+    }
+
+    return {
+      navigateTo,
+    }
+  },
+})
+</script>
+
 <style scoped>
 * {
   font-family: 'Lucida Sans';
 }
 
 .text-h5 {
-  font-size: 1.5rem;
-}
-
-.shadow-section {
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Adds a custom shadow */
+  font-size: 0.5rem;
 }
 
 .text-center {
   text-align: center;
-}
-
-.mx-8 {
-  margin-left: 32px;
-  margin-right: 32px;
 }
 
 .mt-4 {
