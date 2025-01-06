@@ -4,24 +4,15 @@ import 'vuetify/styles'
 
 // Composables
 import { createVuetify } from 'vuetify'
-
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
+// Create and export Vuetify instance
 export default createVuetify({
   components,
   directives,
   icons: {
-    defaultSet: 'mdi',
-    sets: {
-      mdi: {
-        component: 'MdiSvgIcon',
-        props: {
-          class: 'mdi',
-        },
-      },
-    },
+    defaultSet: 'mdi', // Make sure this matches the icon set used in your component
   },
   theme: {
     defaultTheme: 'dark',

@@ -5,7 +5,7 @@
       <v-row justify="center" class="pa-6" style="background-color: #a8e4ef">
         <!-- Left: Worker and Client Buttons -->
         <v-col cols="12" md="5" class="text-center">
-          <v-img src="/sllogo.png" max-width="50%" class="mb-4 mx-auto" alt="SupportLink Logo" />
+          <v-img :src="slLogo" max-width="50%" class="mb-4 mx-auto" alt="SupportLink Logo" />
 
           <v-row>
             <v-col cols="12" class="text-center">
@@ -34,9 +34,7 @@
               </v-btn>
               <p class="mt-5">
                 Follow up on your service request?
-                <v-btn text color="secondary" class="" @click="navigateTo('tracking')">
-                  Track here.
-                </v-btn>
+                <v-btn text color="secondary" @click="navigateTo('tracking')"> Track here. </v-btn>
               </p>
             </v-col>
           </v-row>
@@ -55,7 +53,7 @@
           <v-row class="mt-4" justify="center">
             <v-col cols="12" sm="4" class="text-center">
               <v-img
-                src="/donation.jpg"
+                :src="donationImg"
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Community Support"
@@ -63,7 +61,7 @@
             </v-col>
             <v-col cols="12" sm="4" class="text-center">
               <v-img
-                src="/support.jpg"
+                :src="supportImg"
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Support Session"
@@ -71,7 +69,7 @@
             </v-col>
             <v-col cols="12" sm="4" class="text-center">
               <v-img
-                src="/food.jpg"
+                :src="foodImg"
                 aspect-ratio="16/9"
                 class="rounded-lg bounce-animation"
                 alt="Volunteer Distribution"
@@ -120,6 +118,11 @@ import {
   VContainer,
 } from 'vuetify/components'
 
+import slLogo from '@/assets/images/sllogo.png'
+import donationImg from '@/assets/images/donation.jpg'
+import supportImg from '@/assets/images/support.jpg'
+import foodImg from '@/assets/images/food.jpg'
+
 export default defineComponent({
   name: 'LandingPage',
   components: {
@@ -150,6 +153,14 @@ export default defineComponent({
       navigateTo,
     }
   },
+  data() {
+    return {
+      slLogo,
+      donationImg,
+      supportImg,
+      foodImg,
+    }
+  },
 })
 </script>
 
@@ -159,7 +170,7 @@ export default defineComponent({
 }
 
 .text-h5 {
-  font-size: 0.5rem;
+  font-size: 1rem; /* Increased font size for better readability */
 }
 
 .text-center {

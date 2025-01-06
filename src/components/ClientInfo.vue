@@ -82,7 +82,14 @@ async function handleSubmit() {
 <template>
   <v-responsive class="border rounded">
     <v-app :theme="theme">
-      <v-app-bar class="px-3" style="background-color: #ff8c00; color: white; margin-bottom: 0">
+      <v-app-bar
+        class="px-3"
+        style="
+          background-image: url('/src/assets/images/client.jpg');
+          color: white;
+          margin-bottom: 0;
+        "
+      >
         <v-container>
           <h2 class="white--text" style="margin: 0">Client Information Form</h2>
         </v-container>
@@ -162,7 +169,7 @@ async function handleSubmit() {
                     class="mt-1"
                     type="submit"
                     block
-                    style="background-color: #ff8c00; color: white; margin: 0"
+                    style="background-color: blue; color: white; margin: 0"
                   >
                     Next
                   </v-btn>
@@ -173,7 +180,11 @@ async function handleSubmit() {
         </v-container>
       </v-main>
 
-      <v-footer style="background-color: #ff8c00" border app>
+      <v-footer
+        style="background-image: url('/src/assets/images/client.jpg'); color: white"
+        border
+        app
+      >
         <v-container>
           <v-row justify="space-between">
             <!-- Left-aligned text -->
@@ -183,13 +194,15 @@ async function handleSubmit() {
 
             <!-- Right-aligned links in a single line -->
             <v-col cols="12" sm="6" class="text-center text-sm-end">
-              <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
+              <a href="/privacy-policy" class="footer-link" style="color: white">Privacy Policy</a>
               <span class="footer-divider mx-2">|</span>
-              <a href="/terms-of-service" class="footer-link">Terms of Service</a>
+              <a href="/terms-of-service" class="footer-link" style="color: white"
+                >Terms of Service</a
+              >
               <span class="footer-divider mx-2">|</span>
-              <a href="/faqs" class="footer-link">FAQs</a>
+              <a href="/faqs" class="footer-link" style="color: white">FAQs</a>
               <span class="footer-divider mx-2">|</span>
-              <a href="/feedback" class="footer-link">Feedback</a>
+              <a href="/feedback" class="footer-link" style="color: white">Feedback</a>
             </v-col>
           </v-row>
         </v-container>

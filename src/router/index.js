@@ -1,5 +1,5 @@
-// Composables
 import { createRouter, createWebHistory } from 'vue-router'
+import { supabase } from '@/utils/supabaseClient'
 
 // Import components
 import LandingPage from '@/components/LandingPage.vue'
@@ -12,6 +12,20 @@ import RequestsData from '@/components/RequestsData.vue'
 import ClientResult from '@/components/ClientResult.vue'
 import ResourcesData from '@/components/ResourcesData.vue'
 
+async function authGuard(to, from, next) {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+  if (error || !user) {
+    console.log('No user found or error occurred:', error)
+    next('/login')
+  } else {
+    console.log('User found:', user)
+    next()
+  }
+}
+
 const routes = [
   { path: '/', component: LandingPage },
   { path: '/client-info', component: ClientInfo },
@@ -19,9 +33,9 @@ const routes = [
   { path: '/viewresult', component: ViewResult },
   { path: '/tracking', component: TrackingPage },
   { path: '/login', component: LogIn },
-  { path: '/requestsdata', component: RequestsData },
-  { path: '/clientresult', component: ClientResult },
-  { path: '/resourcesdata', component: ResourcesData },
+  { path: '/requestsdata', component: RequestsData, beforeEnter: authGuard },
+  { path: '/clientresult', component: ClientResult, beforeEnter: authGuard },
+  { path: '/resourcesdata', component: ResourcesData, beforeEnter: authGuard },
 ]
 
 const router = createRouter({
@@ -29,23 +43,4 @@ const router = createRouter({
   routes,
 })
 
-// Workaround for https://github.com/vitejs/vite/issues/11804
-router.onError((err, to) => {
-  if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
-    if (!localStorage.getItem('vuetify:dynamic-reload')) {
-      console.log('Reloading page to fix dynamic import error')
-      localStorage.setItem('vuetify:dynamic-reload', 'true')
-      location.assign(to.fullPath)
-    } else {
-      console.error('Dynamic import error, reloading page did not fix it', err)
-    }
-  } else {
-    console.error(err)
-  }
-})
-
-router.isReady().then(() => {
-  localStorage.removeItem('vuetify:dynamic-reload')
-})
-
-export default router
+export default router // Ensure this is a default export

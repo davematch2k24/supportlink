@@ -13,32 +13,18 @@ import {
   VFooter,
   VSheet,
   VTextField,
+  VBtn,
   VMain,
   VSpacer,
   VProgressLinear,
   VChip,
-  VDataTable,
-  VToolbar,
-  VToolbarTitle,
-  VDivider,
-  VPagination,
-  VBtn,
+  VTable,
 } from 'vuetify/components'
 
 const theme = ref('light')
 const resourcesData = ref([])
 const loading = ref(false)
 const search = ref('')
-const itemsPerPage = ref(10)
-const currentPage = ref(1)
-
-const headers = [
-  { text: 'Type', value: 'res_type' },
-  { text: 'Name', value: 'name' },
-  { text: 'Address', value: 'location' },
-  { text: 'Contact', value: 'contact' },
-  { text: 'Quantity', value: 'units' },
-]
 
 const router = useRouter()
 
@@ -74,7 +60,10 @@ function getResourceTypeColor(type) {
 
 <template>
   <v-app :theme="theme">
-    <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
+    <v-app-bar
+      class="px-3"
+      style="background-image: url('/src/assets/images/worker.jpg'); color: white"
+    >
       <v-container>
         <v-row align="center">
           <v-col cols="12">
@@ -96,46 +85,55 @@ function getResourceTypeColor(type) {
     >
       <v-container>
         <v-row justify="center">
-          <v-col cols="12" md="12">
-            <v-sheet elevation="3" class="mx-auto my-12 py-8 px-6" rounded="lg">
+          <v-col cols="12" md="10">
+            <v-sheet elevation="1" class="mx-auto my-12 py-8 px-6" rounded="lg">
               <v-progress-linear v-if="loading" indeterminate color="orange" />
               <template v-else>
                 <v-text-field v-model="search" label="Search Resources" class="mb-4" outlined />
-                <v-data-table
-                  v-model:page="currentPage"
-                  :items="resourcesData"
-                  :headers="headers"
-                  class="elevation-1"
-                  :search="search"
-                  :items-per-page="itemsPerPage"
-                >
-                  <template #top>
-                    <v-toolbar flat>
-                      <v-toolbar-title>Resources Data</v-toolbar-title>
-                      <v-divider class="mx-4" inset vertical />
-                      <v-spacer />
-                    </v-toolbar>
-                  </template>
-                  <template #item="{ item }">
+
+                <!-- Data Table -->
+                <v-table>
+                  <thead>
                     <tr>
-                      <td>
+                      <th class="text-center fw-bold">
+                        <strong>Type</strong>
+                      </th>
+                      <th class="text-center fw-bold">
+                        <strong>Name</strong>
+                      </th>
+                      <th class="text-center fw-bold">
+                        <strong>Location</strong>
+                      </th>
+                      <th class="text-center fw-bold">
+                        <strong>Contact</strong>
+                      </th>
+                      <th class="text-center fw-bold">
+                        <strong>Quantity</strong>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="item in resourcesData" :key="item.id">
+                      <td class="text-center">
                         <v-chip :color="getResourceTypeColor(item.res_type)" dark>
                           {{ item.res_type }}
                         </v-chip>
                       </td>
-                      <td>{{ item.name }}</td>
-                      <td>{{ item.location }}</td>
-                      <td>{{ item.contact }}</td>
-                      <td>{{ item.units }}</td>
+                      <td class="text-center">
+                        {{ item.description }}
+                      </td>
+                      <td class="text-center">
+                        {{ item.location }}
+                      </td>
+                      <td class="text-center">
+                        {{ item.contact }}
+                      </td>
+                      <td class="text-center">
+                        {{ item.units }}
+                      </td>
                     </tr>
-                  </template>
-                </v-data-table>
-                <v-pagination
-                  v-model="currentPage"
-                  :length="Math.ceil(resourcesData.length / itemsPerPage)"
-                  :total-visible="5"
-                  class="mt-4"
-                />
+                  </tbody>
+                </v-table>
               </template>
             </v-sheet>
           </v-col>
@@ -143,7 +141,7 @@ function getResourceTypeColor(type) {
       </v-container>
     </v-main>
 
-    <v-footer color="orange" app>
+    <v-footer style="background-image: url('/src/assets/images/worker.jpg'); color: white" app>
       <v-container>
         <v-row justify="space-between">
           <v-col cols="12" sm="6" class="text-center text-sm-start">
@@ -198,6 +196,16 @@ body {
 .v-sheet {
   background-color: white !important;
   border-radius: 8px !important;
+  margin-top: 0;
+}
+
+.v-table th,
+.v-table td {
+  text-align: center;
+}
+
+.v-table th {
+  font-weight: bold;
 }
 
 .mx-auto {
@@ -218,5 +226,17 @@ body {
 .px-6 {
   padding-left: 1.5rem !important;
   padding-right: 1.5rem !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.fw-bold {
+  font-weight: bold;
+}
+
+.mb-4 {
+  margin-bottom: 1rem !important;
 }
 </style>

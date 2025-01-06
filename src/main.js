@@ -1,14 +1,13 @@
-// main.js
-
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
-import { registerPlugins } from './plugins' // Ensure this path is correct
+import vuetify from './plugins/vuetify' // Ensure the correct path
+import router from './router/index' // Ensure the correct path
+
+import '@mdi/font/css/materialdesignicons.css'
 
 const app = createApp(App)
 
-registerPlugins(app)
-
+app.use(vuetify)
 app.use(router)
 
 app.mount('#app')

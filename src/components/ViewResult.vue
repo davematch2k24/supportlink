@@ -11,7 +11,6 @@ import {
   VFooter,
   VSheet,
   VMain,
-  VProgressLinear,
   VChip,
   VBtn,
   VDivider,
@@ -66,10 +65,39 @@ onMounted(async () => {
   clientData.value = clientDataResponse
 })
 
-function getStatusColor(status) {
+function formatDate(date) {
+  if (!date) return 'Pending'
+
+  // Parse the input date string
+  const providedDate = new Date(date)
+
+  // Adjust the time by subtracting 4 hours for the correct timezone
+  const adjustedDate = new Date(providedDate.getTime() + 8 * 60 * 60000)
+
+  // Format the date into "Monday, January 6, 2025, 1:10 A.M."
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }
+
+  return adjustedDate.toLocaleString('en-US', options)
+}
+
+function getStatusColor(status, isDate) {
+  if (isDate) {
+    // Remove gray background and only return color when there's a valid date
+    return status ? '' : ''
+  }
+
+  // For other status (like Pending, Approved, etc.)
   switch (status) {
     case 'Pending':
-      return 'orange'
+      return 'grey'
     case 'Onprocess':
       return 'blue'
     case 'Rejected':
@@ -80,11 +108,15 @@ function getStatusColor(status) {
       return 'grey'
   }
 }
+
+function goBack() {
+  router.push('/')
+}
 </script>
 
 <template>
   <v-app :theme="theme">
-    <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
+    <v-app-bar class="px-3">
       <v-container>
         <v-row align="center">
           <v-col cols="12">
@@ -93,6 +125,9 @@ function getStatusColor(status) {
         </v-row>
       </v-container>
       <v-spacer />
+      <v-btn text class="back-btn" @click="goBack">
+        <span style="font-size: 18px; color: white">Back</span>
+      </v-btn>
     </v-app-bar>
 
     <v-main
@@ -146,7 +181,15 @@ function getStatusColor(status) {
                     </p>
                     <p>
                       <strong>Date of Request:</strong>
-                      {{ requestData?.date_of_req }}
+                      {{ formatDate(requestData?.date_of_req) }}
+                    </p>
+                    <p v-if="requestData?.date_of_comp">
+                      <strong>Date of Completion:</strong>
+                      {{ formatDate(requestData?.date_of_comp) }}
+                    </p>
+                    <p v-if="requestData?.date_of_cater">
+                      <strong>Date of Service:</strong>
+                      {{ formatDate(requestData?.date_of_cater) }}
                     </p>
                   </v-col>
                 </v-row>
@@ -157,7 +200,7 @@ function getStatusColor(status) {
       </v-container>
     </v-main>
 
-    <v-footer color="orange" app>
+    <v-footer app>
       <v-container>
         <v-row justify="space-between">
           <v-col cols="12" sm="6" class="text-center text-sm-start">
@@ -184,7 +227,9 @@ body {
 }
 
 .v-app-bar {
-  background-color: #ff8c00 !important;
+  background-image: url('/src/assets/images/client.jpg');
+  background-size: cover;
+  background-position: center;
   color: white !important;
 }
 
@@ -196,7 +241,9 @@ body {
 }
 
 .v-footer {
-  background-color: #ff8c00 !important;
+  background-image: url('/src/assets/images/client.jpg');
+  background-size: cover;
+  background-position: center;
   color: white !important;
 }
 

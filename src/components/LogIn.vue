@@ -16,8 +16,13 @@ import {
   VBtn,
   VForm,
   VMain,
-  VSpacer, // Import VSpacer
+  VSpacer,
 } from 'vuetify/components'
+
+// Import images
+import workerImage from '@/assets/images/worker.jpg'
+import backgroundFormsImage from '@/assets/images/background-forms.jpg'
+import slLogo from '@/assets/images/sllogo.png'
 
 const theme = ref('light')
 const email = ref('')
@@ -51,11 +56,16 @@ const handleLogin = async () => {
 
 <template>
   <v-app :theme="theme">
-    <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
+    <!-- Header Section -->
+    <v-app-bar
+      class="px-3"
+      :style="{ backgroundImage: `url(${workerImage})`, backgroundSize: 'cover' }"
+      color="transparent"
+    >
       <v-container>
         <v-row align="center">
           <v-col cols="1" sm="1">
-            <img src="/sllogo.png" alt="SupportLink Logo" class="pt-3" style="height: 65px" />
+            <img :src="slLogo" alt="SupportLink Logo" class="pt-3" style="height: 65px" />
           </v-col>
           <v-spacer />
           <v-col cols="11" sm="3">
@@ -65,12 +75,13 @@ const handleLogin = async () => {
       </v-container>
     </v-app-bar>
 
+    <!-- Main Section -->
     <v-main
-      style="
-        background-image: url('/src/assets/images/background-forms.jpg');
-        background-size: cover;
-        background-position: center;
-      "
+      :style="{
+        backgroundImage: `url(${backgroundFormsImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }"
     >
       <v-container>
         <v-row justify="center">
@@ -96,7 +107,7 @@ const handleLogin = async () => {
                     </p>
                   </v-col>
                   <v-col cols="12">
-                    <v-btn class="mt-1" type="submit" color="primary" block> Login </v-btn>
+                    <v-btn class="mt-1" type="submit" color="yellow" block> Login </v-btn>
                   </v-col>
                 </v-row>
               </v-form>
@@ -106,20 +117,21 @@ const handleLogin = async () => {
       </v-container>
     </v-main>
 
-    <v-footer color="orange" app>
+    <!-- Footer Section -->
+    <v-footer :style="{ backgroundImage: `url(${workerImage})`, backgroundSize: 'cover' }" app>
       <v-container>
         <v-row justify="space-between">
           <v-col cols="12" sm="6" class="text-center text-sm-start">
-            <span>© 2024 - SupportLink | All Rights Reserved</span>
+            <span class="white--text">© 2024 - SupportLink | All Rights Reserved</span>
           </v-col>
           <v-col cols="12" sm="6" class="text-center text-sm-end">
-            <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
+            <a href="/privacy-policy" class="footer-link white--text">Privacy Policy</a>
             <span class="footer-divider mx-2">|</span>
-            <a href="/terms-of-service" class="footer-link">Terms of Service</a>
+            <a href="/terms-of-service" class="footer-link white--text">Terms of Service</a>
             <span class="footer-divider mx-2">|</span>
-            <a href="/faqs" class="footer-link">FAQs</a>
+            <a href="/faqs" class="footer-link white--text">FAQs</a>
             <span class="footer-divider mx-2">|</span>
-            <a href="/feedback" class="footer-link">Feedback</a>
+            <a href="/feedback" class="footer-link white--text">Feedback</a>
           </v-col>
         </v-row>
       </v-container>
@@ -133,19 +145,18 @@ body {
 }
 
 .v-app-bar {
-  background-color: #ff8c00 !important;
+  background-size: cover !important;
   color: white !important;
 }
 
 .v-main {
   background-color: #f0f2f5 !important;
-  background-image: url('/src/assets/images/background-forms.jpg') !important;
   background-size: cover !important;
   background-position: center !important;
 }
 
 .v-footer {
-  background-color: #ff8c00 !important;
+  background-size: cover !important;
   color: white !important;
 }
 

@@ -83,7 +83,10 @@ async function handleSubmit() {
 
 <template>
   <v-app>
-    <v-app-bar class="px-3" style="background-color: #ff8c00; color: white; margin-bottom: 0">
+    <v-app-bar
+      class="px-3"
+      style="background-image: url('/src/assets/images/client.jpg'); color: white; margin-bottom: 0"
+    >
       <v-container>
         <h2 class="white--text" style="margin: 0">Request Information Form</h2>
       </v-container>
@@ -102,7 +105,7 @@ async function handleSubmit() {
       <v-container style="padding-bottom: 0; margin-bottom: 0">
         <v-row justify="center" style="margin-bottom: 0">
           <v-col cols="12" md="8">
-            <v-sheet class="mx-auto py-3 px-3" elevation="3">
+            <v-sheet class="mx-auto py-3 px-3" elevation="20" style="background-color: #f0f0f0">
               <h3 class="text-center" style="margin: 0 0 4px 0">Request Information</h3>
               <v-form @submit.prevent="handleSubmit">
                 <v-row>
@@ -112,7 +115,7 @@ async function handleSubmit() {
                       :items="['Money Assistance', 'Food Assistance', 'Housing', 'Guidance']"
                       label="Request Type"
                       required
-                      style="margin: 0 0 4px 0"
+                      style="margin: 0 0 4px 0; background-color: #e0e0e0"
                     />
                   </v-col>
                   <v-col cols="12">
@@ -120,7 +123,7 @@ async function handleSubmit() {
                       v-model="formData.requestPurpose"
                       label="Request Purpose"
                       required
-                      style="margin: 0 0 4px 0"
+                      style="margin: 0 0 4px 0; background-color: #e0e0e0"
                     />
                   </v-col>
                 </v-row>
@@ -129,7 +132,7 @@ async function handleSubmit() {
                   type="submit"
                   block
                   :loading="loading"
-                  style="background-color: #ff8c00; color: white; margin: 0"
+                  style="background-color: #0a5eb0; color: white; margin: 0"
                 >
                   Submit
                 </v-btn>
@@ -140,7 +143,11 @@ async function handleSubmit() {
       </v-container>
     </v-main>
 
-    <v-footer style="background-color: #ff8c00" border app>
+    <v-footer
+      style="background-image: url('/src/assets/images/client.jpg'); color: white"
+      border
+      app
+    >
       <v-container>
         <v-row justify="space-between">
           <v-col cols="12" sm="6" class="text-center text-sm-start">
@@ -167,7 +174,8 @@ body {
 }
 
 .v-app-bar {
-  background-color: #ff8c00 !important;
+  background-size: cover;
+  background-position: center;
   color: white !important;
 }
 
@@ -179,12 +187,13 @@ body {
 }
 
 .v-footer {
-  background-color: #ff8c00 !important;
+  background-size: cover;
+  background-position: center;
   color: white !important;
 }
 
 .footer-link {
-  color: white;
+  color: rgb(255, 255, 255);
   text-decoration: none;
 }
 
@@ -194,7 +203,12 @@ body {
 }
 
 .v-sheet {
-  background-color: white !important;
+  background-color: #a8a4a4 !important;
   border-radius: 8px !important;
+}
+
+.v-btn {
+  background-color: #9e9e9e;
+  color: white;
 }
 </style>

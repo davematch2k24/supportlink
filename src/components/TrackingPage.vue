@@ -15,6 +15,7 @@ import {
   VBtn,
   VForm,
   VMain,
+  VSpacer,
 } from 'vuetify/components'
 
 const theme = ref('light')
@@ -36,11 +37,18 @@ function trackPackage() {
     query: { trackingNumber: trackingNumber.value },
   })
 }
+
+function goBack() {
+  router.push('/')
+}
 </script>
 
 <template>
   <v-app :theme="theme">
-    <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
+    <v-app-bar
+      class="px-3"
+      style="background-image: url('/src/assets/images/client.jpg'); color: white"
+    >
       <v-container>
         <v-row align="center">
           <v-col cols="12">
@@ -48,6 +56,10 @@ function trackPackage() {
           </v-col>
         </v-row>
       </v-container>
+      <v-spacer />
+      <v-btn text class="back-btn" @click="goBack">
+        <span style="font-size: 18px; color: white">Back</span>
+      </v-btn>
     </v-app-bar>
 
     <v-main
@@ -82,7 +94,7 @@ function trackPackage() {
       </v-container>
     </v-main>
 
-    <v-footer color="orange" app>
+    <v-footer style="background-image: url('/src/assets/images/client.jpg'); color: white" app>
       <v-container>
         <v-row justify="space-between">
           <v-col cols="12" sm="6" class="text-center text-sm-start">
@@ -109,7 +121,8 @@ body {
 }
 
 .v-app-bar {
-  background-color: #ff8c00 !important;
+  background-size: cover;
+  background-position: center;
   color: white !important;
 }
 
@@ -120,7 +133,8 @@ body {
 }
 
 .v-footer {
-  background-color: #ff8c00 !important;
+  background-size: cover;
+  background-position: center;
   color: white !important;
 }
 
