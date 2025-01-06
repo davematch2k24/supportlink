@@ -1,6 +1,24 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '../utils/supabaseClient' // Adjusted import path
+
+// Import necessary Vuetify components
+import {
+  VApp,
+  VMain,
+  VForm,
+  VTextField,
+  VBtn,
+  VRow,
+  VCol,
+  VContainer,
+  VSpacer,
+  VFooter,
+  VSheet,
+  VResponsive,
+  VAppBar,
+} from 'vuetify/components'
 
 const theme = ref('light')
 const formData = ref({
@@ -14,11 +32,13 @@ const formData = ref({
 const rules = {
   required: (value) => !!value || 'This field is required.',
   phoneNumber: (value) => /^\d+$/.test(value) || 'Phone number must contain only numbers.',
+  email: (value) => /.+@.+\..+/.test(value) || 'Invalid email address.',
+  number: (value) => !isNaN(value) || 'Must be a number.',
 }
 
 const router = useRouter()
 
-function handleSubmit() {
+async function handleSubmit() {
   if (
     !formData.value.fullName ||
     !formData.value.phoneNumber ||
@@ -29,26 +49,56 @@ function handleSubmit() {
     alert('Please fill out all required fields correctly.')
     return
   }
+
+  const clientData = {
+    name: formData.value.fullName,
+    contact_number: formData.value.phoneNumber,
+    address: formData.value.homeAddress,
+    email: formData.value.emailAddress,
+    family_count: formData.value.numberOfFamilyMembers,
+  }
+
+  console.log('Client Data:', clientData)
+
+  // Insert data into Supabase
+  const { data, error } = await supabase.from('clients').insert([clientData]).select()
+
+  if (error) {
+    console.error('Error uploading data:', error)
+    alert('Failed to upload data. Please try again.')
+    return
+  }
+
+  const clientId = data[0].id
+
   // Save data to localStorage
   localStorage.setItem('firstPageData', JSON.stringify(formData.value))
-  // Navigate to the ClientRequest page
-  router.push('/clientrequest')
+
+  // Navigate to the ClientRequest page with client_id as a query parameter
+  router.push({ path: '/client-request', query: { client_id: clientId } })
 }
 </script>
 
 <template>
   <v-responsive class="border rounded">
     <v-app :theme="theme">
-      <v-app-bar class="px-3" style="background-color: #ff8c00; color: white; margin-bottom: 0">
+      <v-app-bar
+        class="px-3"
+        style="
+          background-image: url('/src/assets/images/client.jpg');
+          color: white;
+          margin-bottom: 0;
+        "
+      >
         <v-container>
           <h2 class="white--text" style="margin: 0">Client Information Form</h2>
         </v-container>
-        <v-spacer></v-spacer>
+        <v-spacer />
       </v-app-bar>
 
       <v-main
         style="
-          background-image: url('/public/background-forms.jpg');
+          background-image: url('/src/assets/images/background-forms.jpg');
           background-size: cover;
           background-position: center;
           padding-bottom: 0;
@@ -68,7 +118,7 @@ function handleSubmit() {
                         :rules="[rules.required]"
                         label="Full Name"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
@@ -77,18 +127,18 @@ function handleSubmit() {
                         label="Home Address"
                         type="text"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-row>
                     <v-col cols="12" md="6">
                       <v-text-field
                         v-model="formData.numberOfFamilyMembers"
-                        :rules="[rules.required]"
+                        :rules="[rules.required, rules.number]"
                         label="Number of Family Members"
                         type="number"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-row>
@@ -104,23 +154,25 @@ function handleSubmit() {
                         label="Phone Number"
                         type="text"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
                         v-model="formData.emailAddress"
+                        :rules="[rules.email]"
                         label="Email Address (Optional)"
                         style="margin: 0 0 4px 0"
-                      ></v-text-field>
+                      />
                     </v-col>
                   </v-row>
                   <v-btn
                     class="mt-1"
                     type="submit"
                     block
-                    style="background-color: #ff8c00; color: white; margin: 0"
-                    >Next</v-btn
+                    style="background-color: blue; color: white; margin: 0"
                   >
+                    Next
+                  </v-btn>
                 </v-form>
               </v-sheet>
             </v-col>
@@ -128,24 +180,29 @@ function handleSubmit() {
         </v-container>
       </v-main>
 
-      <!-- Footer Section -->
-      <v-footer style="background-color: #ff8c00" border app>
+      <v-footer
+        style="background-image: url('/src/assets/images/client.jpg'); color: white"
+        border
+        app
+      >
         <v-container>
           <v-row justify="space-between">
             <!-- Left-aligned text -->
             <v-col cols="12" sm="6" class="text-center text-sm-start">
-              <span>Copyright © 2024 - SupportLink | All Rights Reserved</span>
+              <span>© 2024 - SupportLink | All Rights Reserved</span>
             </v-col>
 
             <!-- Right-aligned links in a single line -->
             <v-col cols="12" sm="6" class="text-center text-sm-end">
-              <a href="/privacy-policy" class="footer-link">Privacy Policy</a>
+              <a href="/privacy-policy" class="footer-link" style="color: white">Privacy Policy</a>
               <span class="footer-divider mx-2">|</span>
-              <a href="/terms-of-service" class="footer-link">Terms of Service</a>
+              <a href="/terms-of-service" class="footer-link" style="color: white"
+                >Terms of Service</a
+              >
               <span class="footer-divider mx-2">|</span>
-              <a href="/faqs" class="footer-link">FAQs</a>
+              <a href="/faqs" class="footer-link" style="color: white">FAQs</a>
               <span class="footer-divider mx-2">|</span>
-              <a href="/feedback" class="footer-link">Feedback</a>
+              <a href="/feedback" class="footer-link" style="color: white">Feedback</a>
             </v-col>
           </v-row>
         </v-container>
@@ -239,6 +296,7 @@ body {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
   }
+
   .py-4 {
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;
