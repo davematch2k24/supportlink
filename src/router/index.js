@@ -1,3 +1,13 @@
+<<<<<<< HEAD
+=======
+import LoginView from '@/views/auth/LoginView.vue'
+import DashboardView from '@/views/system/DashboardView.vue'
+import LandingPageView from '@/views/system/LandingPageView.vue'
+import ClientInfo from '@/views/system/ClientInfo.vue'
+import ClientRequest from '@/views/system/ClientRequest.vue'
+import ViewResult from '@/views/system/ViewResult.vue'
+import TrackingPage from '@/views/system/TrackingPage.vue'
+>>>>>>> origin/development
 import { createRouter, createWebHistory } from 'vue-router'
 import { supabase } from '@/utils/supabaseClient'
 
@@ -56,6 +66,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+<<<<<<< HEAD
   routes,
 })
 
@@ -72,6 +83,45 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next() // Proceed with the navigation if the user is logged in
   }
+=======
+  routes: [
+    {
+      path: '/',
+      name: 'landingpage',
+      component: LandingPageView,
+    },
+    {
+      path: '/login',
+      name: 'home',
+      component: LoginView,
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView,
+    },
+    {
+      path: '/clientinfo',
+      name: 'clientinfo',
+      component: ClientInfo,
+    },
+    {
+      path: '/clientrequest',
+      name: 'clientrequest',
+      component: ClientRequest,
+    },
+    {
+      path: '/viewresult',
+      name: 'viewresult',
+      component: ViewResult,
+    },
+    {
+      path: '/trackingpage',
+      name: 'trackingpage',
+      component: TrackingPage,
+    },
+  ],
+>>>>>>> origin/development
 })
 
 export default router

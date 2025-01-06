@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -25,12 +24,19 @@ onMounted(() => {
     <v-app :theme="theme">
       <v-app-bar class="px-3" style="background-color: #ff8c00; color: white">
         <v-container>
-          <h2 class="white--text">Request Details</h2>
+          <v-row>
+            <v-col cols="12" class="text-left">
+              <h2 class="white--text">
+                <strong>Tracking Number: {{ trackingNumber }}</strong>
+              </h2>
+            </v-col>
+          </v-row>
         </v-container>
         <v-spacer></v-spacer>
       </v-app-bar>
 
       <v-main
+        class="d-flex justify-center align-center"
         style="
           background-image: url('/public/background-forms.jpg');
           background-size: cover;
@@ -38,34 +44,37 @@ onMounted(() => {
           padding: 10px 0;
         "
       >
-        <v-container>
-          <v-sheet class="mx-auto py-4 px-4" elevation="3" style="max-width: 800px">
-            <h3 class="tracking-number">Tracking Number: {{ trackingNumber }}</h3>
-            <v-divider></v-divider>
-            <div class="info-section">
-              <p><strong>Full Name:</strong> {{ resultData.fullName }}</p>
-              <p><strong>Phone Number:</strong> {{ resultData.phoneNumber }}</p>
-              <p><strong>Email Address:</strong> {{ resultData.emailAddress }}</p>
-              <p><strong>Home Address:</strong> {{ resultData.homeAddress }}</p>
-              <p>
-                <strong>Number of Family Members:</strong> {{ resultData.numberOfFamilyMembers }}
-              </p>
-            </div>
-            <v-divider></v-divider>
-            <div class="info-section">
-              <p><strong>Request Type:</strong> {{ resultData.requestType }}</p>
-              <p><strong>Request Purpose:</strong> {{ resultData.requestPurpose }}</p>
-            </div>
-            <v-divider></v-divider>
-            <div class="info-section">
-              <p class="request-status">
-                <strong>Request Status:</strong>
-                <span :class="(resultData.status || 'pending').toLowerCase()">
-                  <span class="circle"></span> {{ resultData.status || 'Pending' }}</span
-                >
-              </p>
-            </div>
-          </v-sheet>
+        <v-container class="fill-height">
+          <v-row class="d-flex justify-center align-center">
+            <v-col cols="12" md="8">
+              <v-sheet class="mx-auto py-1 px-4" elevation="3" style="max-width: 800px">
+                <div class="info-section">
+                  <p><strong>Full Name:</strong> {{ resultData.fullName }}</p>
+                  <p><strong>Phone Number:</strong> {{ resultData.phoneNumber }}</p>
+                  <p><strong>Email Address:</strong> {{ resultData.emailAddress }}</p>
+                  <p><strong>Home Address:</strong> {{ resultData.homeAddress }}</p>
+                  <p>
+                    <strong>Number of Family Members:</strong>
+                    {{ resultData.numberOfFamilyMembers }}
+                  </p>
+                </div>
+                <v-divider></v-divider>
+                <div class="info-section">
+                  <p><strong>Request Type:</strong> {{ resultData.requestType }}</p>
+                  <p><strong>Request Purpose:</strong> {{ resultData.requestPurpose }}</p>
+                </div>
+                <v-divider></v-divider>
+                <div class="info-section">
+                  <p class="request-status">
+                    <strong>Request Status:</strong>
+                    <span :class="(resultData.status || 'pending').toLowerCase()">
+                      <span class="circle"></span> {{ resultData.status || 'Pending' }}</span
+                    >
+                  </p>
+                </div>
+              </v-sheet>
+            </v-col>
+          </v-row>
         </v-container>
       </v-main>
 
@@ -175,92 +184,6 @@ body {
 .tracking-number {
   font-size: 28px; /* Increased font size */
   margin-bottom: 20px;
-
-<template>
-  <v-app>
-    <HeaderNav />
-
-    <v-responsive style="background-color: #d9eafd" class="hero">
-      <v-row>
-        <v-col cols="12" md="8">
-          <v-container class="hero-content mt-10"></v-container>
-        </v-col>
-        <v-col cols="12" md="4" class="my-16">
-          <v-responsive class="float-animation elevation-5 rounded" :width="500">
-            <v-img
-              :width="500"
-              aspect-ratio="16/9"
-              cover
-              src="/public/donation.jpg"
-              class=""
-            ></v-img>
-          </v-responsive>
-        </v-col>
-      </v-row>
-    </v-responsive>
-
-    <FooterNav />
-  </v-app>
-</template>
-
-<script>
-import HeaderNav from '@/components/navigation/HeaderNav.vue'
-import Button from '@/components/navigation/Button.vue'
-import FooterNav from '@/components/navigation/FooterNav.vue'
-
-export default {
-  name: 'DashboardView',
-  components: {
-    HeaderNav,
-    Button,
-    FooterNav,
-  },
-}
-</script>
-
-<style scoped>
-.hero {
-  padding: 50px;
-  background-color: #f8f9fa;
-}
-
-.hero-content {
-  max-width: 80%;
-}
-
-.green-text {
-  color: #4caf50;
-}
-
-.grey-text {
-  color: #666;
-}
-
-.mt-4 {
-  margin-top: 16px;
-}
-
-/* Rounded borders */
-.rounded {
-  border-radius: 40px; /* Adjust the border-radius as needed */
-}
-
-/* Add the animation for the image */
-.float-animation {
-  animation: float 3s ease-in-out infinite; /* Infinite up-and-down animation */
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0); /* Start at the original position */
-  }
-  50% {
-    transform: translateY(-20px); /* Move up 20px */
-  }
-  100% {
-    transform: translateY(0); /* Return to the original position */
-  }
-
 }
 
 .info-section {
